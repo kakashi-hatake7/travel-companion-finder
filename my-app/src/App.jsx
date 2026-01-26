@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRight, Navigation } from 'lucide-react';
+import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRight, Navigation, LogIn, LogOut, User } from 'lucide-react';
 import { WavyBackground } from './components/ui/wavy-background';
 import { BackgroundGradient } from './components/ui/background-gradient';
+import AuthPage from './components/auth/AuthPage';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './firebase';
 import './App.css';
 
 export default function TravelCompanionFinder() {
@@ -23,6 +26,11 @@ export default function TravelCompanionFinder() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Auth state
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const destinations = [
     'Abohar', 'Abuja', 'Adoni', 'Agartala', 'Agra', 'Ahmedabad', 'Ahmednagar', 'Aizawl', 'Ajmer', 'Akola',
@@ -66,6 +74,24 @@ export default function TravelCompanionFinder() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setShowUserMenu(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   useEffect(() => {
     if (trips.length > 0) {
@@ -171,15 +197,54 @@ export default function TravelCompanionFinder() {
             </button>
           </nav>
 
-          <button
-            className="notification-btn"
-            onClick={() => setView('notifications')}
-          >
-            <Bell size={20} />
-            {notifications.length > 0 && (
-              <span className="notification-badge">{notifications.length}</span>
+          <div className="header-actions">
+            {currentUser ? (
+              <div className="user-dropdown">
+                <button
+                  className="user-profile-btn"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                >
+                  <div className="user-avatar">
+                    {currentUser.displayName?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <span>{currentUser.displayName || 'User'}</span>
+                </button>
+                {showUserMenu && (
+                  <div className="user-dropdown-menu">
+                    <button className="user-dropdown-item">
+                      <User size={16} />
+                      {currentUser.email}
+                    </button>
+                    <button
+                      className="user-dropdown-item logout"
+                      onClick={handleLogout}
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                className="login-btn"
+                onClick={() => setShowAuthModal(true)}
+              >
+                <LogIn size={16} />
+                Sign In
+              </button>
             )}
-          </button>
+
+            <button
+              className="notification-btn"
+              onClick={() => setView('notifications')}
+            >
+              <Bell size={20} />
+              {notifications.length > 0 && (
+                <span className="notification-badge">{notifications.length}</span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -507,6 +572,14 @@ export default function TravelCompanionFinder() {
       <footer className="footer">
         <p>© 2026 TravelBuddy. Travel smarter, together.</p>
       </footer>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthPage
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={() => setShowAuthModal(false)}
+        />
+      )}
     </WavyBackground>
   );
 }
