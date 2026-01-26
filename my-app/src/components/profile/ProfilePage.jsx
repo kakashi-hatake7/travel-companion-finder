@@ -1,0 +1,363 @@
+import React, { useState, useEffect } from 'react';
+import {
+    User, MapPin, GraduationCap, Globe, Heart, MessageCircle,
+    Camera, Edit2, Save, X, Mountain, Umbrella, Wallet, Sparkles,
+    Instagram, Twitter, Languages
+} from 'lucide-react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+
+const TRAVEL_INTERESTS = [
+    { id: 'mountains', label: 'Mountains', icon: Mountain },
+    { id: 'beaches', label: 'Beaches', icon: Umbrella },
+    { id: 'budget', label: 'Budget Travel', icon: Wallet },
+    { id: 'luxury', label: 'Luxury', icon: Sparkles },
+    { id: 'adventure', label: 'Adventure', icon: Mountain },
+    { id: 'cultural', label: 'Cultural', icon: Globe },
+    { id: 'roadtrips', label: 'Road Trips', icon: MapPin },
+    { id: 'solo', label: 'Solo Travel', icon: User },
+];
+
+const LANGUAGES = [
+    // International
+    'English', 'español (Spanish)', '中国人 (Mandarin)', '한국인 (Korean)', 
+    'русский (Russian)', 'Italiano (Italian)',
+    // Indian Languages
+    'हिन्दी (Hindi)', 'తెలుగు (Telugu)', 'தமிழ் (Tamil)', 'ಕನ್ನಡ (Kannada)', 
+    'മലയാളം (Malayalam)', 'ଓଡିଆ (Odia)', 'संस्कृत (Sanskrit)', 'বাংলা (Bengali)', 
+    'ತುಳು (Tulu)', 'অসমীয়া (Assamese)', 'मराठी (Marathi)', 'ਪੰਜਾਬੀ (Punjabi)', 
+    'ગુજરાતી (Gujarati)',
+    // Asian & European
+    '日本語 (Japanese)', 'Deutsch (German)', 'français (French)', 
+    'عربي (Arabic)', 'اردو (Urdu)'
+];
+
+const AVATAR_COLORS = [
+    '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe',
+    '#00f2fe', '#43e97b', '#38f9d7', '#fa709a', '#fee140'
+];
+
+export default function ProfilePage({ currentUser, onClose }) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [profile, setProfile] = useState({
+        name: currentUser?.displayName || '',
+        avatarColor: AVATAR_COLORS[0],
+        age: '',
+        school: '',
+        city: '',
+        country: '',
+        interests: [],
+        languages: [],
+        bio: '',
+        instagram: '',
+        twitter: ''
+    });
+
+    // Load profile from Firestore
+    useEffect(() => {
+        const loadProfile = async () => {
+            if (!currentUser) return;
+
+            try {
+                const docRef = doc(db, 'profiles', currentUser.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    setProfile(prev => ({ ...prev, ...docSnap.data() }));
+                } else {
+                    // Set default values for new profile
+                    setProfile(prev => ({
+                        ...prev,
+                        name: currentUser.displayName || '',
+                        avatarColor: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]
+                    }));
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProfile();
+    }, [currentUser]);
+
+    // Save profile to Firestore
+    const handleSave = async () => {
+        if (!currentUser) return;
+
+        setSaving(true);
+        try {
+            const docRef = doc(db, 'profiles', currentUser.uid);
+            await setDoc(docRef, {
+                ...profile,
+                email: currentUser.email,
+                updatedAt: new Date().toISOString()
+            });
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            alert('Failed to save profile. Please try again.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const toggleInterest = (interestId) => {
+        setProfile(prev => ({
+            ...prev,
+            interests: prev.interests.includes(interestId)
+                ? prev.interests.filter(i => i !== interestId)
+                : [...prev.interests, interestId]
+        }));
+    };
+
+    const toggleLanguage = (lang) => {
+        setProfile(prev => ({
+            ...prev,
+            languages: prev.languages.includes(lang)
+                ? prev.languages.filter(l => l !== lang)
+                : [...prev.languages, lang]
+        }));
+    };
+
+    if (loading) {
+        return (
+            <div className="profile-overlay" onClick={onClose}>
+                <div className="profile-modal glass-card" onClick={e => e.stopPropagation()}>
+                    <div className="profile-loading">Loading profile...</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="profile-overlay" onClick={onClose}>
+            <div className="profile-modal glass-card" onClick={e => e.stopPropagation()}>
+                <button className="profile-close" onClick={onClose}>×</button>
+
+                {/* Header */}
+                <div className="profile-header">
+                    <div
+                        className="profile-avatar-large"
+                        style={{ background: profile.avatarColor }}
+                    >
+                        {profile.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            className="profile-name-input"
+                            value={profile.name}
+                            onChange={e => setProfile({ ...profile, name: e.target.value })}
+                            placeholder="Your Name"
+                        />
+                    ) : (
+                        <h2 className="profile-name">{profile.name || 'Your Name'}</h2>
+                    )}
+
+                    <p className="profile-email">{currentUser?.email}</p>
+
+                    {isEditing && (
+                        <div className="avatar-color-picker">
+                            <span>Avatar Color:</span>
+                            <div className="color-options">
+                                {AVATAR_COLORS.map(color => (
+                                    <button
+                                        key={color}
+                                        className={`color-option ${profile.avatarColor === color ? 'selected' : ''}`}
+                                        style={{ background: color }}
+                                        onClick={() => setProfile({ ...profile, avatarColor: color })}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Profile Content */}
+                <div className="profile-content">
+                    {/* Basic Info */}
+                    <div className="profile-section">
+                        <h3><User size={18} /> Basic Info</h3>
+                        <div className="profile-fields">
+                            <div className="profile-field">
+                                <label>Age</label>
+                                {isEditing ? (
+                                    <input
+                                        type="number"
+                                        value={profile.age}
+                                        onChange={e => setProfile({ ...profile, age: e.target.value })}
+                                        placeholder="Your age"
+                                        min="13"
+                                        max="100"
+                                    />
+                                ) : (
+                                    <span>{profile.age || 'Not specified'}</span>
+                                )}
+                            </div>
+
+                            <div className="profile-field">
+                                <label><GraduationCap size={14} /> School/University</label>
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={profile.school}
+                                        onChange={e => setProfile({ ...profile, school: e.target.value })}
+                                        placeholder="Your school or university"
+                                    />
+                                ) : (
+                                    <span>{profile.school || 'Not specified'}</span>
+                                )}
+                            </div>
+
+                            <div className="profile-field-row">
+                                <div className="profile-field">
+                                    <label><MapPin size={14} /> City</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={profile.city}
+                                            onChange={e => setProfile({ ...profile, city: e.target.value })}
+                                            placeholder="City"
+                                        />
+                                    ) : (
+                                        <span>{profile.city || 'Not specified'}</span>
+                                    )}
+                                </div>
+                                <div className="profile-field">
+                                    <label><Globe size={14} /> Country</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={profile.country}
+                                            onChange={e => setProfile({ ...profile, country: e.target.value })}
+                                            placeholder="Country"
+                                        />
+                                    ) : (
+                                        <span>{profile.country || 'Not specified'}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Travel Interests */}
+                    <div className="profile-section">
+                        <h3><Heart size={18} /> Travel Interests</h3>
+                        <div className="interests-grid">
+                            {TRAVEL_INTERESTS.map(interest => {
+                                const Icon = interest.icon;
+                                const isSelected = profile.interests.includes(interest.id);
+                                return (
+                                    <button
+                                        key={interest.id}
+                                        className={`interest-tag ${isSelected ? 'selected' : ''}`}
+                                        onClick={() => isEditing && toggleInterest(interest.id)}
+                                        disabled={!isEditing}
+                                    >
+                                        <Icon size={14} />
+                                        {interest.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Languages */}
+                    <div className="profile-section">
+                        <h3><Languages size={18} /> Languages</h3>
+                        <div className="languages-grid">
+                            {LANGUAGES.map(lang => {
+                                const isSelected = profile.languages.includes(lang);
+                                return (
+                                    <button
+                                        key={lang}
+                                        className={`language-tag ${isSelected ? 'selected' : ''}`}
+                                        onClick={() => isEditing && toggleLanguage(lang)}
+                                        disabled={!isEditing}
+                                    >
+                                        {lang}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Bio */}
+                    <div className="profile-section">
+                        <h3><MessageCircle size={18} /> Bio</h3>
+                        {isEditing ? (
+                            <textarea
+                                className="profile-bio-input"
+                                value={profile.bio}
+                                onChange={e => setProfile({ ...profile, bio: e.target.value })}
+                                placeholder="Tell travelers about yourself..."
+                                maxLength={300}
+                            />
+                        ) : (
+                            <p className="profile-bio">{profile.bio || 'No bio yet. Add a short intro about yourself!'}</p>
+                        )}
+                    </div>
+
+                    {/* Social Media */}
+                    <div className="profile-section">
+                        <h3><Globe size={18} /> Social Media</h3>
+                        <div className="social-fields">
+                            <div className="social-field">
+                                <Instagram size={18} />
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={profile.instagram}
+                                        onChange={e => setProfile({ ...profile, instagram: e.target.value })}
+                                        placeholder="Instagram username"
+                                    />
+                                ) : (
+                                    <span>{profile.instagram ? `@${profile.instagram}` : 'Not linked'}</span>
+                                )}
+                            </div>
+                            <div className="social-field">
+                                <Twitter size={18} />
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={profile.twitter}
+                                        onChange={e => setProfile({ ...profile, twitter: e.target.value })}
+                                        placeholder="Twitter/X username"
+                                    />
+                                ) : (
+                                    <span>{profile.twitter ? `@${profile.twitter}` : 'Not linked'}</span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="profile-actions">
+                    {isEditing ? (
+                        <>
+                            <button className="btn-secondary" onClick={() => setIsEditing(false)}>
+                                <X size={18} />
+                                Cancel
+                            </button>
+                            <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                                <Save size={18} />
+                                {saving ? 'Saving...' : 'Save Profile'}
+                            </button>
+                        </>
+                    ) : (
+                        <button className="btn-primary" onClick={() => setIsEditing(true)}>
+                            <Edit2 size={18} />
+                            Edit Profile
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}

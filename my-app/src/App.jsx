@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRight, Navigation, LogIn, LogOut, User } from 'lucide-react';
+import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRight, Navigation, LogIn, LogOut, User, Send } from 'lucide-react';
 import { WavyBackground } from './components/ui/wavy-background';
 import { BackgroundGradient } from './components/ui/background-gradient';
 import AuthPage from './components/auth/AuthPage';
+import ProfilePage from './components/profile/ProfilePage';
+import InteractiveGlobe from './components/globe/InteractiveGlobe';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import './App.css';
@@ -22,6 +24,8 @@ export default function TravelCompanionFinder() {
     startPoint: '',
     date: ''
   });
+  const [destinationSearchTerm, setDestinationSearchTerm] = useState('');
+  const [isDestinationDropdownOpen, setIsDestinationDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -31,6 +35,7 @@ export default function TravelCompanionFinder() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const destinations = [
     'Abohar', 'Abuja', 'Adoni', 'Agartala', 'Agra', 'Ahmedabad', 'Ahmednagar', 'Aizawl', 'Ajmer', 'Akola',
@@ -211,9 +216,15 @@ export default function TravelCompanionFinder() {
                 </button>
                 {showUserMenu && (
                   <div className="user-dropdown-menu">
-                    <button className="user-dropdown-item">
+                    <button
+                      className="user-dropdown-item"
+                      onClick={() => {
+                        setShowProfileModal(true);
+                        setShowUserMenu(false);
+                      }}
+                    >
                       <User size={16} />
-                      {currentUser.email}
+                      View Profile
                     </button>
                     <button
                       className="user-dropdown-item logout"
@@ -440,87 +451,17 @@ export default function TravelCompanionFinder() {
           </div>
         )}
 
-        {/* Search View */}
+        {/* Search View - Interactive Globe */}
         {view === 'search' && (
-          <div className="search-view animate-fade-in">
-            <div className="search-header">
-              <h2>Find Travel Companions</h2>
-              <p>Search for travelers matching your journey</p>
-            </div>
-
-            <div className="search-filters glass-card">
-              <div className="filters-grid">
-                <select
-                  value={searchFilters.destination}
-                  onChange={(e) => setSearchFilters({ ...searchFilters, destination: e.target.value })}
-                >
-                  <option value="">All Destinations</option>
-                  {[...destinations].sort((a, b) => a.localeCompare(b)).map(dest => (
-                    <option key={dest} value={dest}>{dest}</option>
-                  ))}
-                </select>
-
-                <select
-                  value={searchFilters.startPoint}
-                  onChange={(e) => setSearchFilters({ ...searchFilters, startPoint: e.target.value })}
-                >
-                  <option value="">All Starting Points</option>
-                  {startPoints.map(point => (
-                    <option key={point} value={point}>{point}</option>
-                  ))}
-                </select>
-
-                <input
-                  type="date"
-                  value={searchFilters.date}
-                  onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="trips-list">
-              {filteredTrips.length === 0 ? (
-                <div className="empty-state glass-card">
-                  <Search size={48} />
-                  <h3>No trips found</h3>
-                  <p>Try adjusting your filters or register a new trip</p>
-                  <button className="btn-primary" onClick={() => setView('register')}>
-                    <Plus size={18} />
-                    Register Trip
-                  </button>
-                </div>
-              ) : (
-                filteredTrips.map((trip, index) => (
-                  <div
-                    key={trip.id}
-                    className="trip-card glass-card animate-fade-in-up"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <div className="trip-main">
-                      <div className="trip-destination">
-                        <MapPin size={20} />
-                        <h3>{trip.destination}</h3>
-                      </div>
-                      <div className="trip-details">
-                        <div className="detail-item">
-                          <Navigation size={14} />
-                          <span>{trip.startPoint}</span>
-                        </div>
-                        <div className="detail-item">
-                          <Clock size={14} />
-                          <span>{trip.date} at {trip.time}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="trip-contact">
-                      <Phone size={16} />
-                      <span>{trip.contact}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <InteractiveGlobe
+            trips={trips}
+            destinations={destinations}
+            onRegisterTrip={(destination) => {
+              setFormData({ ...formData, destination });
+              setSearchTerm(destination);
+              setView('register');
+            }}
+          />
         )}
 
         {/* Notifications View */}
@@ -581,6 +522,14 @@ export default function TravelCompanionFinder() {
         <AuthPage
           onClose={() => setShowAuthModal(false)}
           onSuccess={() => setShowAuthModal(false)}
+        />
+      )}
+
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <ProfilePage
+          currentUser={currentUser}
+          onClose={() => setShowProfileModal(false)}
         />
       )}
     </WavyBackground>

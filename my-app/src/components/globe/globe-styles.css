@@ -1,0 +1,518 @@
+/* Globe Container */
+.globe-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 100px);
+    min-height: 500px;
+    overflow: hidden;
+}
+
+.globe-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.globe-wrapper canvas {
+    cursor: grab;
+}
+
+.globe-wrapper canvas:active {
+    cursor: grabbing;
+}
+
+/* Globe Controls */
+.globe-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+}
+
+.globe-control-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 20, 25, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.globe-control-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: white;
+    transform: scale(1.05);
+}
+
+.globe-control-btn.active {
+    background: rgba(99, 102, 241, 0.4);
+    border-color: rgba(99, 102, 241, 0.6);
+    color: white;
+}
+
+/* Search Container */
+.globe-search-container {
+    position: relative;
+}
+
+.globe-search-dropdown {
+    position: absolute;
+    top: 0;
+    right: 54px;
+    width: 280px;
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.globe-search-dropdown input {
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.globe-search-dropdown input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-results {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.search-result-item:hover {
+    background: rgba(99, 102, 241, 0.2);
+    color: white;
+}
+
+.search-result-item svg {
+    color: rgba(99, 102, 241, 0.8);
+    flex-shrink: 0;
+}
+
+.result-country {
+    margin-left: auto;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
+}
+
+/* Stats Bar */
+.globe-stats {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+
+.stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(20, 20, 25, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+}
+
+.stat-pill svg {
+    color: rgba(99, 102, 241, 0.8);
+}
+
+/* Location Popup */
+.location-popup {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 420px;
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 24px;
+    z-index: 200;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+    animation: popupSlide 0.3s ease;
+}
+
+@keyframes popupSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.popup-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.popup-close:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: white;
+}
+
+.popup-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.popup-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+    border-radius: 16px;
+    color: white;
+}
+
+.popup-title h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.popup-country {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+}
+
+.popup-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.popup-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.popup-stat .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.popup-stat .stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Trips List */
+.popup-trips h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.trips-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.trip-mini-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.15s ease;
+}
+
+.trip-mini-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.trip-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.trip-route,
+.trip-datetime {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.trip-route svg,
+.trip-datetime svg {
+    color: rgba(99, 102, 241, 0.7);
+}
+
+.trip-contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 8px;
+    color: #818cf8;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.trip-contact-btn:hover {
+    background: rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+/* Empty State */
+.popup-empty {
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.popup-empty p {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.popup-empty-sub {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.4) !important;
+    margin-top: 4px !important;
+}
+
+/* Register Button */
+.popup-register-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.popup-register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
+/* Instructions */
+.globe-instructions {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    background: rgba(20, 20, 25, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+    animation: fadeInUp 0.5s ease 0.5s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Tooltip Styles (injected via Globe component) */
+.globe-tooltip {
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 10px 14px;
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+}
+
+.tooltip-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tooltip-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.tooltip-country {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.tooltip-count {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    color: #818cf8;
+    font-weight: 500;
+}
+
+.tooltip-empty {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .globe-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .stat-pill {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .location-popup {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        transform: none;
+        padding: 20px;
+    }
+
+    @keyframes popupSlide {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .popup-title h2 {
+        font-size: 20px;
+    }
+
+    .globe-instructions {
+        font-size: 11px;
+        padding: 10px 16px;
+    }
+}

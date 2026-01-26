@@ -5,12 +5,14 @@
 // 2. Create a new project called "TravelBuddy"
 // 3. Go to Build → Authentication → Get Started
 // 4. Enable "Email/Password" sign-in method
-// 5. Go to Project Settings → Your apps → Add web app
-// 6. Copy your config values below
+// 5. Go to Build → Firestore Database → Create database
+// 6. Go to Project Settings → Your apps → Add web app
+// 7. Copy your config values below
 
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // TODO: Replace with your Firebase config from Firebase Console
 const firebaseConfig = {
@@ -28,6 +30,11 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
+
+// Initialize Firestore Database
+export const db = getFirestore(app);
+
 const analytics = getAnalytics(app);
 
 export default app;
+
