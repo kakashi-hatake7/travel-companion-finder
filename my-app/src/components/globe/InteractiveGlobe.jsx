@@ -23,10 +23,7 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
         return DESTINATION_COORDINATES.map(coord => ({
             ...coord,
             travelerCount: tripCounts[coord.name] || 0,
-            size: tripCounts[coord.name] ? 0.8 + Math.min(tripCounts[coord.name] * 0.2, 1.2) : 0.5,
-            color: tripCounts[coord.name]
-                ? 'rgba(99, 102, 241, 1)' // Active locations - indigo
-                : 'rgba(156, 163, 175, 0.6)' // Inactive locations - gray
+            hasTraverlers: tripCounts[coord.name] > 0
         }));
     }, [trips]);
 
@@ -93,20 +90,61 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
         }
     }, []);
 
-    // Custom HTML for pins
-    const getPointLabel = useCallback((point) => {
+    // Custom HTML for pin markers (📍 style)
+    const getPinMarker = useCallback((point) => {
+        const isActive = point.travelerCount > 0;
+        const pinColor = isActive ? '#22c55e' : '#ef4444'; // Green if active, Red if not
+        const glowColor = isActive ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.3)';
+
         return `
-      <div class="globe-tooltip">
-        <div class="tooltip-header">
-          <span class="tooltip-name">${point.name}</span>
-          <span class="tooltip-country">${point.country}</span>
-        </div>
-        ${point.travelerCount > 0
-                ? `<div class="tooltip-count">${point.travelerCount} traveler${point.travelerCount > 1 ? 's' : ''}</div>`
-                : '<div class="tooltip-empty">No travelers yet</div>'
+            <div class="map-pin-container" style="cursor: pointer;">
+                <div class="map-pin" style="
+                    color: ${pinColor};
+                    filter: drop-shadow(0 2px 4px ${glowColor});
+                ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="${pinColor}" stroke="#fff" stroke-width="1">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                        <circle cx="12" cy="9" r="2.5" fill="#fff"/>
+                    </svg>
+                </div>
+                ${point.travelerCount > 0 ? `
+                    <div class="pin-badge" style="
+                        position: absolute;
+                        top: -8px;
+                        right: -8px;
+                        background: ${pinColor};
+                        color: white;
+                        font-size: 10px;
+                        font-weight: 700;
+                        min-width: 16px;
+                        height: 16px;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 2px solid #fff;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    ">${point.travelerCount}</div>
+                ` : ''}
+            </div>
+        `;
+    }, []);
+
+    // Tooltip on hover
+    const getPinLabel = useCallback((point) => {
+        const isActive = point.travelerCount > 0;
+        return `
+            <div class="globe-tooltip ${isActive ? 'active' : 'inactive'}">
+                <div class="tooltip-header">
+                    <span class="tooltip-name">${point.name}</span>
+                    <span class="tooltip-country">${point.country}</span>
+                </div>
+                ${point.travelerCount > 0
+                ? `<div class="tooltip-count green">${point.travelerCount} traveler${point.travelerCount > 1 ? 's' : ''} 🟢</div>`
+                : '<div class="tooltip-empty red">No travelers yet 🔴</div>'
             }
-      </div>
-    `;
+            </div>
+        `;
     }, []);
 
     return (
@@ -115,20 +153,40 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
             <div className="globe-wrapper">
                 <Globe
                     ref={globeRef}
-                    globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-                    bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
+                    // High-resolution NASA Earth textures (8K)
+                    globeImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg"
+                    bumpImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png"
                     backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+                    // Use HTML markers for pin-style icons
+                    htmlElementsData={locationData}
+                    htmlElement={(d) => {
+                        const el = document.createElement('div');
+                        el.innerHTML = getPinMarker(d);
+                        el.style.pointerEvents = 'auto';
+                        el.style.cursor = 'pointer';
+                        el.onclick = () => handleLocationClick(d);
+                        el.onmouseenter = () => {
+                            el.querySelector('.map-pin')?.classList.add('hovered');
+                        };
+                        el.onmouseleave = () => {
+                            el.querySelector('.map-pin')?.classList.remove('hovered');
+                        };
+                        return el;
+                    }}
+                    htmlLat={(d) => d.lat}
+                    htmlLng={(d) => d.lng}
+                    htmlAltitude={0.01}
+                    // Keep points for tooltip labels
                     pointsData={locationData}
                     pointLat="lat"
                     pointLng="lng"
-                    pointAltitude={0.01}
-                    pointRadius="size"
-                    pointColor="color"
-                    pointLabel={getPointLabel}
-                    onPointClick={handleLocationClick}
+                    pointAltitude={0}
+                    pointRadius={0.001}
+                    pointColor={() => 'transparent'}
+                    pointLabel={getPinLabel}
                     onGlobeReady={() => setGlobeReady(true)}
-                    atmosphereColor="rgba(99, 102, 241, 0.3)"
-                    atmosphereAltitude={0.15}
+                    atmosphereColor="rgba(100, 180, 255, 0.3)"
+                    atmosphereAltitude={0.2}
                     enablePointerInteraction={true}
                 />
             </div>
