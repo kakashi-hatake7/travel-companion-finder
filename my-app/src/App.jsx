@@ -39,7 +39,7 @@ export default function TravelCompanionFinder() {
 
   const destinations = [
     'Abohar', 'Abuja', 'Adoni', 'Agartala', 'Agra', 'Ahmedabad', 'Ahmednagar', 'Aizawl', 'Ajmer', 'Akola',
- 'Aligarh', 'Alwar', 'Amreli', 'Amritsar', 'Amsterdam', 'Anantapuram', 'Andaman & Nicobar Islands',
+'Aligarh', 'Alwar', 'Amreli', 'Amritsar', 'Amsterdam', 'Anantapuram', 'Andaman & Nicobar Islands',
 'Asansol', 'Athens', 'Aurangabad', 'Ayodhya', 'Azamgarh', 'Ballari', 'Ballia', 'Balasore', 'Bangalore',
 'Bansberia', 'Bareilly', 'Baripada', 'Barcelona', 'Bathinda', 'Beijing', 'Belagavi', 'Benin City',
 'Berhampur', 'Bhadrak', 'Bhagalpur', 'Bharatpur', 'Bhavnagar', 'Bhilai', 'Bhiwadi', 'Bhiwani',

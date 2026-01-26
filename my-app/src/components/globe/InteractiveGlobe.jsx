@@ -153,9 +153,9 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
             <div className="globe-wrapper">
                 <Globe
                     ref={globeRef}
-                    // High-resolution NASA Earth textures (8K)
-                    globeImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg"
-                    bumpImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png"
+                    // Low quality Earth textures (original night mode)
+                    globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
+                    bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
                     backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
                     // Use HTML markers for pin-style icons
                     htmlElementsData={locationData}
