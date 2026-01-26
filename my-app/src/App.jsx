@@ -264,6 +264,9 @@ export default function TravelCompanionFinder() {
                   <br />
                   <span className="text-gradient">Save together.</span>
                 </h1>
+                <p className="hero-tagline">
+                  Build trusted travel connections & memories
+                </p>
                 <p className="hero-subtitle">
                   Connect with fellow travelers heading to the same destination.
                   Share rides, split costs, and make new friends along the way.
