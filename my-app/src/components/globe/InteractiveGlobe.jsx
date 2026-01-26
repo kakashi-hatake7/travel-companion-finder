@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import Globe from 'react-globe.gl';
 import { DESTINATION_COORDINATES } from '../../data/destinationCoordinates';
-import { X, MapPin, Clock, Phone, Navigation, Search, Plus, RotateCcw, Users } from 'lucide-react';
+import { X, MapPin, Clock, Phone, Navigation, Search, Plus, Minus, RotateCcw, Users } from 'lucide-react';
 import './globe-styles.css';
 
 export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }) {
@@ -11,6 +11,7 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [autoRotate, setAutoRotate] = useState(true);
     const [globeReady, setGlobeReady] = useState(false);
+    const [altitude, setAltitude] = useState(2.5);
 
     // Calculate traveler counts per destination
     const locationData = useMemo(() => {
@@ -52,8 +53,38 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
             // Set auto-rotation
             globeRef.current.controls().autoRotate = autoRotate;
             globeRef.current.controls().autoRotateSpeed = 0.5;
+
+            // Track altitude changes for label visibility
+            const controls = globeRef.current.controls();
+            const updateAltitude = () => {
+                const pov = globeRef.current.pointOfView();
+                if (pov && pov.altitude !== undefined) {
+                    setAltitude(pov.altitude);
+                }
+            };
+            controls.addEventListener('change', updateAltitude);
+
+            return () => {
+                controls.removeEventListener('change', updateAltitude);
+            };
         }
     }, [globeReady, autoRotate]);
+
+    // Update active state of pins
+    useEffect(() => {
+        if (!selectedLocation) {
+            document.querySelectorAll('.map-pin-container').forEach(el => el.classList.remove('selected'));
+            return;
+        }
+
+        const safeId = `pin-${selectedLocation.name.replace(/\s+/g, '-')}`;
+        const pin = document.getElementById(safeId);
+
+        if (pin) {
+            document.querySelectorAll('.map-pin-container').forEach(el => el.classList.remove('selected'));
+            pin.classList.add('selected');
+        }
+    }, [selectedLocation]);
 
     // Handle location click
     const handleLocationClick = useCallback((point) => {
@@ -90,41 +121,33 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
         }
     }, []);
 
-    // Custom HTML for pin markers (📍 style)
+    // Zoom handlers
+    const handleZoomIn = useCallback(() => {
+        if (globeRef.current) {
+            const pov = globeRef.current.pointOfView();
+            const newAltitude = Math.max(0.5, pov.altitude - 0.5);
+            globeRef.current.pointOfView({ altitude: newAltitude }, 300);
+        }
+    }, []);
+
+    const handleZoomOut = useCallback(() => {
+        if (globeRef.current) {
+            const pov = globeRef.current.pointOfView();
+            const newAltitude = Math.min(5, pov.altitude + 0.5);
+            globeRef.current.pointOfView({ altitude: newAltitude }, 300);
+        }
+    }, []);
+
+    // Precise Dot Markers
     const getPinMarker = useCallback((point) => {
         const isActive = point.travelerCount > 0;
-        const pinColor = isActive ? '#22c55e' : '#ef4444'; // Green if active, Red if not
-        const glowColor = isActive ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.3)';
+        const color = isActive ? '#22c55e' : '#ef4444'; // Green or Red
 
         return `
-            <div class="map-pin-container" style="cursor: pointer;">
-                <div class="map-pin" style="
-                    color: ${pinColor};
-                    filter: drop-shadow(0 2px 4px ${glowColor});
-                ">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="${pinColor}" stroke="#fff" stroke-width="1">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                        <circle cx="12" cy="9" r="2.5" fill="#fff"/>
-                    </svg>
-                </div>
+            <div id="pin-${point.name.replace(/\s+/g, '-')}" class="map-pin-container" style="cursor: pointer;">
+                <div class="precise-dot" style="background-color: ${color};"></div>
                 ${point.travelerCount > 0 ? `
-                    <div class="pin-badge" style="
-                        position: absolute;
-                        top: -8px;
-                        right: -8px;
-                        background: ${pinColor};
-                        color: white;
-                        font-size: 10px;
-                        font-weight: 700;
-                        min-width: 16px;
-                        height: 16px;
-                        border-radius: 8px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        border: 2px solid #fff;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                    ">${point.travelerCount}</div>
+                    <div class="precise-badge" style="background-color: ${color};">${point.travelerCount}</div>
                 ` : ''}
             </div>
         `;
@@ -153,40 +176,41 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
             <div className="globe-wrapper">
                 <Globe
                     ref={globeRef}
-                    // Low quality Earth textures (original night mode)
-                    globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
+                    // Satellite Earth texture
+                    globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                     bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
-                    backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-                    // Use HTML markers for pin-style icons
+                    // Removed background to allow CSS background or keeping it simple
+                    backgroundColor="rgba(0,0,0,0)"
+                    // Text Labels (only visible when zoomed in)
+                    labelsData={altitude < 1.5 ? locationData : []}
+                    labelLat="lat"
+                    labelLng="lng"
+                    labelText="name"
+                    labelSize={0.2}
+                    labelDotRadius={0}
+                    labelColor={() => 'white'}
+                    labelResolution={2}
+                    labelAltitude={0.01}
+                    // Custom HTML for precise dot markers
                     htmlElementsData={locationData}
                     htmlElement={(d) => {
                         const el = document.createElement('div');
                         el.innerHTML = getPinMarker(d);
                         el.style.pointerEvents = 'auto';
                         el.style.cursor = 'pointer';
-                        el.onclick = () => handleLocationClick(d);
-                        el.onmouseenter = () => {
-                            el.querySelector('.map-pin')?.classList.add('hovered');
-                        };
-                        el.onmouseleave = () => {
-                            el.querySelector('.map-pin')?.classList.remove('hovered');
+                        el.onclick = (e) => {
+                            e.stopPropagation();
+                            handleLocationClick(d);
                         };
                         return el;
                     }}
-                    htmlLat={(d) => d.lat}
-                    htmlLng={(d) => d.lng}
-                    htmlAltitude={0.01}
-                    // Keep points for tooltip labels
-                    pointsData={locationData}
-                    pointLat="lat"
-                    pointLng="lng"
-                    pointAltitude={0}
-                    pointRadius={0.001}
-                    pointColor={() => 'transparent'}
-                    pointLabel={getPinLabel}
+                    htmlLat="lat"
+                    htmlLng="lng"
+                    htmlAltitude={0}
+                    // Atmosphere
                     onGlobeReady={() => setGlobeReady(true)}
-                    atmosphereColor="rgba(100, 180, 255, 0.3)"
-                    atmosphereAltitude={0.2}
+                    atmosphereColor="rgba(200, 230, 255, 0.2)"
+                    atmosphereAltitude={0.15}
                     enablePointerInteraction={true}
                 />
             </div>
@@ -242,6 +266,24 @@ export default function InteractiveGlobe({ trips, onRegisterTrip, destinations }
                     title="Toggle Auto-Rotate"
                 >
                     <RotateCcw size={20} />
+                </button>
+
+                {/* Zoom In */}
+                <button
+                    className="globe-control-btn"
+                    onClick={handleZoomIn}
+                    title="Zoom In"
+                >
+                    <Plus size={20} />
+                </button>
+
+                {/* Zoom Out */}
+                <button
+                    className="globe-control-btn"
+                    onClick={handleZoomOut}
+                    title="Zoom Out"
+                >
+                    <Minus size={20} />
                 </button>
 
                 {/* Reset View */}
