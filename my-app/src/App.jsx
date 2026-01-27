@@ -5,8 +5,12 @@ import { BackgroundGradient } from './components/ui/background-gradient';
 import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
 import InteractiveGlobe from './components/globe/InteractiveGlobe';
+import FindCompanion from './components/FindCompanion';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
+import { ensureUserProfile } from './services/userService';
+import { createTrip, listenToTrips } from './services/tripService';
+import { processNewTripMatches, getMatchesForUser } from './services/matchingService';
 import './App.css';
 
 export default function TravelCompanionFinder() {
@@ -39,40 +43,40 @@ export default function TravelCompanionFinder() {
 
   const destinations = [
     'Abohar', 'Abuja', 'Adoni', 'Agartala', 'Agra', 'Ahmedabad', 'Ahmednagar', 'Aizawl', 'Ajmer', 'Akola',
-'Aligarh', 'Alwar', 'Amreli', 'Amritsar', 'Amsterdam', 'Anantapuram', 'Andaman & Nicobar Islands',
-'Asansol', 'Athens', 'Aurangabad', 'Ayodhya', 'Azamgarh', 'Ballari', 'Ballia', 'Balasore', 'Bangalore',
-'Bansberia', 'Bareilly', 'Baripada', 'Barcelona', 'Bathinda', 'Beijing', 'Belagavi', 'Benin City',
-'Berhampur', 'Bhadrak', 'Bhagalpur', 'Bharatpur', 'Bhavnagar', 'Bhilai', 'Bhiwadi', 'Bhiwani',
-'Bhopal', 'Bhubaneswar', 'Bhuj', 'Bhusawal', 'Bidar', 'Bilaspur', 'Biratnagar', 'Birgunj', 'Bogotá',
-'Brussels', 'Buenos Aires', 'Butwal', 'Cairo', 'Cape Town', 'Casablanca', 'Chandigarh', 'Chandrapur',
-'Chhapra', 'Chennai', 'Chicago', 'Chirkunda', 'Chittoor', 'Coimbatore', 'Copenhagen', 'Cuttack',
-'Dadra & Nagar Haveli', 'Daman & Diu', 'Dallas', 'Darbhanga', 'Darjeeling', 'Davanagere',
-'Dehradun', 'Deoghar', 'Delhi', 'Dhanbad', 'Dhamtari', 'Dharan', 'Dhule', 'Dubai', 'Dublin',
-'Edinburgh', 'Eluru', 'Faridkot', 'Firozpur', 'Fukuoka', 'Gangtok', 'Gaya', 'Gelephu', 'Geneva',
-'Godhra', 'Gonda', 'Gorakhpur', 'Gudivada', 'Gulmarg', 'Guna', 'Guntur', 'Guwahati', 'Gwalior',
-'Hamburg', 'Harare', 'Haridwar', 'Helsinki', 'Hindupur', 'Hiroshima', 'Hong Kong', 'Hospet',
-'Hubli–Dharwad', 'Hyderabad', 'Imphal', 'Indore', 'Itanagar', 'Istanbul', 'Jakarta', 'Jabalpur',
-'Jagtial', 'Jaisalmer', 'Jakar', 'Jalandhar', 'Jalgaon', 'Jalpaiguri', 'Jammu', 'Jamnagar',
-'Janakpur', 'Jaipur', 'Jerusalem', 'Jhansi', 'Jodhpur', 'Johannesburg', 'Jos', 'Kadapa',
-'Kaduna', 'Kaithal', 'Kalaburagi', 'Kanpur', 'Kano', 'Kannur', 'Karimnagar', 'Karnal', 'Katra',
-'Khammam', 'Kinshasa', 'Kochi', 'Kohima', 'Kolkata', 'Kollam', 'Korba', 'Kota', 'Kothagudem',
-'Kottayam', 'Kozhikode', 'Kuala Lumpur', 'Kurnool', 'Kyiv', 'Ladakh', 'Lagos', 'Latur', 'Lisbon',
-'London', 'Los Angeles', 'Lucknow', 'Ludhiana', 'Madrid', 'Maiduguri', 'Malda', 'Mancherial',
-'Manila', 'Mathura', 'Melbourne', 'Meerut', 'Mexico City', 'Milan', 'Mohali', 'Moradabad',
-'Moscow', 'Mumbai', 'Munger', 'Munich', 'Mussoorie', 'Muzaffarpur', 'Mysuru', 'Nagoya', 'Nagpur',
-'Nairobi', 'Nalgonda', 'Nandyal', 'Nandurbar', 'Narasaraopet', 'Nashik', 'Nellore', 'New York',
-'Nizamabad', 'Ongole', 'Onitsha', 'Osaka', 'Ottawa', 'Owerri', 'Pahalgam', 'Paris', 'Patiala',
-'Patna', 'Perth', 'Phuntsholing', 'Prague', 'Prayagraj', 'Proddatur', 'Puducherry', 'Pune',
-'Punakha', 'Purnia', 'Puri', 'Raebareli', 'Raichur', 'Raigarh', 'Rajamahendravaram', 'Rajkot',
-'Rajpura', 'Ramagundam', 'Ranchi', 'Ratlam', 'Rewa', 'Reykjavík', 'Rishikesh', 'Rome', 'Roorkee',
-'Rourkela', 'Rudrapur', 'Sagar', 'Saharanpur', 'Salem', 'Samastipur', 'Samdrup Jongkhar',
-'Sambalpur', 'Samtse', 'Sangli', 'Santiago', 'Sapporo', 'Sasaram', 'Satara', 'Satna', 'Sendai',
-'Seoul', 'Shanghai', 'Shamli', 'Shillong', 'Siddipet', 'Sikar', 'Siliguri', 'Singapore',
-'Sokoto', 'Sonamarg', 'Srikakulam', 'Srinagar', 'Stockholm', 'Sultanpur', 'Surat', 'Sydney',
-'Tadipatri', 'Tawang', 'Tenali', 'Thanjavur', 'Thimphu', 'Thiruvananthapuram', 'Thrissur',
-'Tokyo', 'Toronto', 'Tiruchirappalli', 'Tirunelveli', 'Tirupati', 'Tumkur', 'Udaipur', 'Udupi',
-'Uyo', 'Vadodara', 'Vancouver', 'Varanasi', 'Vellore', 'Vienna', 'Vijayawada', 'Vizag',
-'Vrindavan', 'Warsaw', 'Washington DC', 'West Rand', 'Yokohama', 'Zurich'
+    'Aligarh', 'Alwar', 'Amreli', 'Amritsar', 'Amsterdam', 'Anantapuram', 'Andaman & Nicobar Islands',
+    'Asansol', 'Athens', 'Aurangabad', 'Ayodhya', 'Azamgarh', 'Ballari', 'Ballia', 'Balasore', 'Bangalore',
+    'Bansberia', 'Bareilly', 'Baripada', 'Barcelona', 'Bathinda', 'Beijing', 'Belagavi', 'Benin City',
+    'Berhampur', 'Bhadrak', 'Bhagalpur', 'Bharatpur', 'Bhavnagar', 'Bhilai', 'Bhiwadi', 'Bhiwani',
+    'Bhopal', 'Bhubaneswar', 'Bhuj', 'Bhusawal', 'Bidar', 'Bilaspur', 'Biratnagar', 'Birgunj', 'Bogotá',
+    'Brussels', 'Buenos Aires', 'Butwal', 'Cairo', 'Cape Town', 'Casablanca', 'Chandigarh', 'Chandrapur',
+    'Chhapra', 'Chennai', 'Chicago', 'Chirkunda', 'Chittoor', 'Coimbatore', 'Copenhagen', 'Cuttack',
+    'Dadra & Nagar Haveli', 'Daman & Diu', 'Dallas', 'Darbhanga', 'Darjeeling', 'Davanagere',
+    'Dehradun', 'Deoghar', 'Delhi', 'Dhanbad', 'Dhamtari', 'Dharan', 'Dhule', 'Dubai', 'Dublin',
+    'Edinburgh', 'Eluru', 'Faridkot', 'Firozpur', 'Fukuoka', 'Gangtok', 'Gaya', 'Gelephu', 'Geneva',
+    'Godhra', 'Gonda', 'Gorakhpur', 'Gudivada', 'Gulmarg', 'Guna', 'Guntur', 'Guwahati', 'Gwalior',
+    'Hamburg', 'Harare', 'Haridwar', 'Helsinki', 'Hindupur', 'Hiroshima', 'Hong Kong', 'Hospet',
+    'Hubli–Dharwad', 'Hyderabad', 'Imphal', 'Indore', 'Itanagar', 'Istanbul', 'Jakarta', 'Jabalpur',
+    'Jagtial', 'Jaisalmer', 'Jakar', 'Jalandhar', 'Jalgaon', 'Jalpaiguri', 'Jammu', 'Jamnagar',
+    'Janakpur', 'Jaipur', 'Jerusalem', 'Jhansi', 'Jodhpur', 'Johannesburg', 'Jos', 'Kadapa',
+    'Kaduna', 'Kaithal', 'Kalaburagi', 'Kanpur', 'Kano', 'Kannur', 'Karimnagar', 'Karnal', 'Katra',
+    'Khammam', 'Kinshasa', 'Kochi', 'Kohima', 'Kolkata', 'Kollam', 'Korba', 'Kota', 'Kothagudem',
+    'Kottayam', 'Kozhikode', 'Kuala Lumpur', 'Kurnool', 'Kyiv', 'Ladakh', 'Lagos', 'Latur', 'Lisbon',
+    'London', 'Los Angeles', 'Lucknow', 'Ludhiana', 'Madrid', 'Maiduguri', 'Malda', 'Mancherial',
+    'Manila', 'Mathura', 'Melbourne', 'Meerut', 'Mexico City', 'Milan', 'Mohali', 'Moradabad',
+    'Moscow', 'Mumbai', 'Munger', 'Munich', 'Mussoorie', 'Muzaffarpur', 'Mysuru', 'Nagoya', 'Nagpur',
+    'Nairobi', 'Nalgonda', 'Nandyal', 'Nandurbar', 'Narasaraopet', 'Nashik', 'Nellore', 'New York',
+    'Nizamabad', 'Ongole', 'Onitsha', 'Osaka', 'Ottawa', 'Owerri', 'Pahalgam', 'Paris', 'Patiala',
+    'Patna', 'Perth', 'Phuntsholing', 'Prague', 'Prayagraj', 'Proddatur', 'Puducherry', 'Pune',
+    'Punakha', 'Purnia', 'Puri', 'Raebareli', 'Raichur', 'Raigarh', 'Rajamahendravaram', 'Rajkot',
+    'Rajpura', 'Ramagundam', 'Ranchi', 'Ratlam', 'Rewa', 'Reykjavík', 'Rishikesh', 'Rome', 'Roorkee',
+    'Rourkela', 'Rudrapur', 'Sagar', 'Saharanpur', 'Salem', 'Samastipur', 'Samdrup Jongkhar',
+    'Sambalpur', 'Samtse', 'Sangli', 'Santiago', 'Sapporo', 'Sasaram', 'Satara', 'Satna', 'Sendai',
+    'Seoul', 'Shanghai', 'Shamli', 'Shillong', 'Siddipet', 'Sikar', 'Siliguri', 'Singapore',
+    'Sokoto', 'Sonamarg', 'Srikakulam', 'Srinagar', 'Stockholm', 'Sultanpur', 'Surat', 'Sydney',
+    'Tadipatri', 'Tawang', 'Tenali', 'Thanjavur', 'Thimphu', 'Thiruvananthapuram', 'Thrissur',
+    'Tokyo', 'Toronto', 'Tiruchirappalli', 'Tirunelveli', 'Tirupati', 'Tumkur', 'Udaipur', 'Udupi',
+    'Uyo', 'Vadodara', 'Vancouver', 'Varanasi', 'Vellore', 'Vienna', 'Vijayawada', 'Vizag',
+    'Vrindavan', 'Warsaw', 'Washington DC', 'West Rand', 'Yokohama', 'Zurich'
 
   ];
 
@@ -84,13 +88,32 @@ export default function TravelCompanionFinder() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Listen for auth state changes
+  // Listen for auth state changes and ensure user profile exists
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+      if (user) {
+        // Ensure user profile exists in Firestore
+        await ensureUserProfile(user);
+      }
     });
     return () => unsubscribe();
   }, []);
+
+  // Listen to real-time trip updates from Firestore
+  useEffect(() => {
+    if (!currentUser) {
+      setTrips([]); // Clear trips when logged out
+      return;
+    }
+
+    // Set up real-time listener for all active trips
+    const unsubscribe = listenToTrips((updatedTrips) => {
+      setTrips(updatedTrips);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   // Handle logout
   const handleLogout = async () => {
@@ -128,7 +151,15 @@ export default function TravelCompanionFinder() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Check if user is logged in
+    if (!currentUser) {
+      alert('Please sign in to register a trip');
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Validate form fields
     if (!formData.destination || !formData.startPoint || !formData.date || !formData.time || !formData.contact) {
       alert('Please fill all fields');
       return;
@@ -137,16 +168,40 @@ export default function TravelCompanionFinder() {
       alert('Please enter a valid 10-digit mobile number');
       return;
     }
-    const newTrip = {
-      id: Date.now(),
-      ...formData,
-      createdAt: new Date().toISOString()
-    };
-    setTrips([...trips, newTrip]);
-    setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
-    setSearchTerm('');
-    setView('home');
-    alert('Trip registered successfully!');
+
+    try {
+      // Create trip in Firestore
+      const result = await createTrip(
+        formData,
+        currentUser.uid,
+        currentUser.displayName || 'Anonymous'
+      );
+
+      if (result.success) {
+        // Process matches for the new trip
+        const matchResult = await processNewTripMatches({
+          id: result.tripId,
+          ...formData,
+          userId: currentUser.uid,
+          userDisplayName: currentUser.displayName || 'Anonymous',
+        });
+
+        // Show success message
+        if (matchResult.matchCount > 0) {
+          alert(`Trip registered! Found ${matchResult.matchCount} potential travel companion(s)!`);
+        } else {
+          alert('Trip registered successfully! We\'ll notify you when we find a match.');
+        }
+
+        // Reset form
+        setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+        setSearchTerm('');
+        setView('home');
+      }
+    } catch (error) {
+      console.error('Error submitting trip:', error);
+      alert('Failed to register trip. Please try again.');
+    }
   };
 
   const filteredTrips = trips.filter(trip => {
@@ -202,7 +257,7 @@ export default function TravelCompanionFinder() {
               className={`nav-link ${view === 'search' ? 'active' : ''}`}
             >
               <Search size={16} />
-              Search
+              Globe
             </button>
           </nav>
 
@@ -269,7 +324,7 @@ export default function TravelCompanionFinder() {
           <div className="home-view">
             {/* Hero Section */}
             <section className="hero-section">
-              <div className="hero-content animate-fade-in-up">
+              <div className="hero-content">
                 <div className="hero-badge">
                   <Sparkles size={14} />
                   <span>Smart Travel Matching</span>
@@ -291,7 +346,7 @@ export default function TravelCompanionFinder() {
                     Register Trip
                     <ArrowRight size={18} />
                   </button>
-                  <button className="btn-secondary" onClick={() => setView('search')}>
+                  <button className="btn-secondary" onClick={() => setView('findCompanion')}>
                     Find Companions
                   </button>
                 </div>
@@ -301,25 +356,25 @@ export default function TravelCompanionFinder() {
             {/* Features Section with Animated Gradient Glow */}
             <section className="features-section">
               <div className="features-grid">
-                <BackgroundGradient className="feature-card-inner" containerClassName="feature-card-container animate-fade-in-up delay-100">
+                <BackgroundGradient className="feature-card-inner" containerClassName="feature-card-container">
                   <div className="feature-icon destination-icon">
-                    <MapPin size={28} />
+                    <MapPin size={32} />
                   </div>
                   <h3>Same Destination</h3>
                   <p>Match with travelers heading to your exact destination city</p>
                 </BackgroundGradient>
 
-                <BackgroundGradient className="feature-card-inner" containerClassName="feature-card-container animate-fade-in-up delay-200">
+                <BackgroundGradient className="feature-card-inner" containerClassName="feature-card-container">
                   <div className="feature-icon time-icon">
-                    <Clock size={28} />
+                    <Clock size={32} />
                   </div>
                   <h3>Perfect Timing</h3>
                   <p>Find companions departing within your preferred time window</p>
                 </BackgroundGradient>
 
-                <BackgroundGradient className="feature-card-inner" containerClassName="feature-card-container animate-fade-in-up delay-300">
+                <BackgroundGradient className="feature-card-inner" containerClassName="feature-card-container">
                   <div className="feature-icon connect-icon">
-                    <Phone size={28} />
+                    <Phone size={32} />
                   </div>
                   <h3>Instant Connect</h3>
                   <p>Get notified immediately when a match is found</p>
@@ -453,6 +508,20 @@ export default function TravelCompanionFinder() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Find Companion View */}
+        {view === 'findCompanion' && (
+          <FindCompanion
+            trips={trips}
+            destinations={destinations}
+            startPoints={startPoints}
+            onRegisterTrip={(destination) => {
+              setFormData({ ...formData, destination });
+              setSearchTerm(destination);
+              setView('register');
+            }}
+          />
         )}
 
         {/* Search View - Interactive Globe */}
