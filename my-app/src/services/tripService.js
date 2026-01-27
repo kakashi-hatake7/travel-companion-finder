@@ -149,6 +149,38 @@ export const updateTripStatus = async (tripId, status) => {
 };
 
 /**
+ * Update trip details
+ */
+export const updateTrip = async (tripId, updatedData) => {
+    try {
+        // Validate required fields
+        if (!updatedData.destination || !updatedData.startPoint || !updatedData.date || !updatedData.time) {
+            throw new Error('Missing required trip fields');
+        }
+
+        // Calculate new expiration date if date changed
+        const tripDate = new Date(updatedData.date);
+        const expiresAt = new Date(tripDate);
+        expiresAt.setDate(expiresAt.getDate() + 1);
+
+        const tripRef = doc(db, 'trips', tripId);
+        await updateDoc(tripRef, {
+            destination: updatedData.destination,
+            startPoint: updatedData.startPoint,
+            date: updatedData.date,
+            time: updatedData.time,
+            contact: updatedData.contact || '',
+            expiresAt: Timestamp.fromDate(expiresAt),
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error updating trip:', error);
+        throw new Error('Failed to update trip: ' + error.message);
+    }
+};
+
+/**
  * Delete a trip
  */
 export const deleteTrip = async (tripId) => {

@@ -6,10 +6,11 @@ import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
 import InteractiveGlobe from './components/globe/InteractiveGlobe';
 import FindCompanion from './components/FindCompanion';
+import MyTrip from './components/MyTrip';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
-import { createTrip, listenToTrips } from './services/tripService';
+import { createTrip, listenToTrips, updateTrip } from './services/tripService';
 import { processNewTripMatches, getMatchesForUser } from './services/matchingService';
 import './App.css';
 
@@ -40,6 +41,7 @@ export default function TravelCompanionFinder() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [editingTripId, setEditingTripId] = useState(null);
 
   const destinations = [
     'Abohar', 'Abuja', 'Adoni', 'Agartala', 'Agra', 'Ahmedabad', 'Ahmednagar', 'Aizawl', 'Ajmer', 'Akola',
@@ -170,37 +172,49 @@ export default function TravelCompanionFinder() {
     }
 
     try {
-      // Create trip in Firestore
-      const result = await createTrip(
-        formData,
-        currentUser.uid,
-        currentUser.displayName || 'Anonymous'
-      );
-
-      if (result.success) {
-        // Process matches for the new trip
-        const matchResult = await processNewTripMatches({
-          id: result.tripId,
-          ...formData,
-          userId: currentUser.uid,
-          userDisplayName: currentUser.displayName || 'Anonymous',
-        });
-
-        // Show success message
-        if (matchResult.matchCount > 0) {
-          alert(`Trip registered! Found ${matchResult.matchCount} potential travel companion(s)!`);
-        } else {
-          alert('Trip registered successfully! We\'ll notify you when we find a match.');
+      // If editing existing trip, update it
+      if (editingTripId) {
+        const result = await updateTrip(editingTripId, formData);
+        if (result.success) {
+          alert('Trip updated successfully!');
+          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setSearchTerm('');
+          setEditingTripId(null);
+          setView('myTrip');
         }
+      } else {
+        // Create new trip in Firestore
+        const result = await createTrip(
+          formData,
+          currentUser.uid,
+          currentUser.displayName || 'Anonymous'
+        );
 
-        // Reset form
-        setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
-        setSearchTerm('');
-        setView('home');
+        if (result.success) {
+          // Process matches for the new trip
+          const matchResult = await processNewTripMatches({
+            id: result.tripId,
+            ...formData,
+            userId: currentUser.uid,
+            userDisplayName: currentUser.displayName || 'Anonymous',
+          });
+
+          // Show success message
+          if (matchResult.matchCount > 0) {
+            alert(`Trip registered! Found ${matchResult.matchCount} potential travel companion(s)!`);
+          } else {
+            alert('Trip registered successfully! We\'ll notify you when we find a match.');
+          }
+
+          // Reset form
+          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setSearchTerm('');
+          setView('home');
+        }
       }
     } catch (error) {
       console.error('Error submitting trip:', error);
-      alert('Failed to register trip. Please try again.');
+      alert(editingTripId ? 'Failed to update trip. Please try again.' : 'Failed to register trip. Please try again.');
     }
   };
 
@@ -251,6 +265,13 @@ export default function TravelCompanionFinder() {
             >
               <Plus size={16} />
               Register
+            </button>
+            <button
+              onClick={() => setView('myTrip')}
+              className={`nav-link ${view === 'myTrip' ? 'active' : ''}`}
+            >
+              <Navigation size={16} />
+              My Trip
             </button>
             <button
               onClick={() => setView('search')}
@@ -409,8 +430,8 @@ export default function TravelCompanionFinder() {
           <div className="register-view animate-fade-in">
             <div className="form-container glass-card">
               <div className="form-header">
-                <h2>Register Your Trip</h2>
-                <p>Share your travel plans and find companions</p>
+                <h2>{editingTripId ? 'Edit Your Trip' : 'Register Your Trip'}</h2>
+                <p>{editingTripId ? 'Update your travel plans' : 'Share your travel plans and find companions'}</p>
               </div>
 
               <div className="form-body">
@@ -503,11 +524,32 @@ export default function TravelCompanionFinder() {
 
                 <button className="submit-btn" onClick={handleSubmit}>
                   <Sparkles size={18} />
-                  Register Trip
+                  {editingTripId ? 'Update Trip' : 'Register Trip'}
                 </button>
               </div>
             </div>
           </div>
+        )}
+
+        {/* My Trip View */}
+        {view === 'myTrip' && (
+          <MyTrip
+            currentUser={currentUser}
+            trips={trips}
+            onEdit={(trip) => {
+              setFormData({
+                destination: trip.destination,
+                startPoint: trip.startPoint,
+                date: trip.date,
+                time: trip.time,
+                contact: trip.contact
+              });
+              setSearchTerm(trip.destination);
+              setEditingTripId(trip.id);
+              setView('register');
+            }}
+            onBack={() => setView('register')}
+          />
         )}
 
         {/* Find Companion View */}
