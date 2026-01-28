@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRight, Navigation, LogIn, LogOut, User, Send } from 'lucide-react';
 import { WavyBackground } from './components/ui/wavy-background';
 import { BackgroundGradient } from './components/ui/background-gradient';
+import ModernTimePicker from './components/ui/ModernTimePicker';
 import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
 import InteractiveGlobe from './components/globe/InteractiveGlobe';
@@ -536,10 +537,10 @@ export default function TravelCompanionFinder() {
                   </div>
                   <div className="form-group">
                     <label>Time</label>
-                    <input
-                      type="time"
+                    <ModernTimePicker
                       value={formData.time}
-                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      onChange={(time) => setFormData({ ...formData, time })}
+                      placeholder="Select time"
                     />
                   </div>
                 </div>
