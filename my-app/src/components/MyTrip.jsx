@@ -1,36 +1,80 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Phone, Calendar, Navigation, Edit, Trash2, AlertCircle, Sparkles } from 'lucide-react';
+import { MapPin, Clock, Phone, Calendar, Navigation, Edit, Trash2, AlertCircle, Sparkles, Users, CheckCircle } from 'lucide-react';
 import { deleteTrip } from '../services/tripService';
+import { getMatchesForUser } from '../services/matchingService';
 
 export default function MyTrip({ currentUser, trips, onEdit, onBack }) {
-    const [userTrip, setUserTrip] = useState(null);
+    const [activeTrip, setActiveTrip] = useState(null);
+    const [pastTrips, setPastTrips] = useState([]);
+    const [matchCount, setMatchCount] = useState(0);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [tripToDelete, setTripToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Get the user's most recent active trip
+    // Separate active and past trips
     useEffect(() => {
         if (currentUser && trips.length > 0) {
             const myTrips = trips.filter(trip => trip.userId === currentUser.uid);
-            if (myTrips.length > 0) {
-                // Get the most recent trip
-                setUserTrip(myTrips[0]);
+
+            const now = new Date();
+            const active = [];
+            const past = [];
+
+            myTrips.forEach(trip => {
+                const tripDateTime = new Date(`${trip.date}T${trip.time}`);
+                if (tripDateTime >= now) {
+                    active.push(trip);
+                } else {
+                    past.push(trip);
+                }
+            });
+
+            // Get most recent active trip
+            if (active.length > 0) {
+                setActiveTrip(active[0]);
+                // Fetch match count for active trip
+                fetchMatchCount(active[0].id);
             } else {
-                setUserTrip(null);
+                setActiveTrip(null);
+                setMatchCount(0);
             }
+
+            // Set past trips (sorted by date descending)
+            setPastTrips(past.sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)));
         } else {
-            setUserTrip(null);
+            setActiveTrip(null);
+            setPastTrips([]);
+            setMatchCount(0);
         }
     }, [currentUser, trips]);
 
+    const fetchMatchCount = async (tripId) => {
+        try {
+            if (currentUser) {
+                const result = await getMatchesForUser(currentUser.uid);
+                if (result.success) {
+                    // Count matches for this specific trip
+                    const tripMatches = result.matches.filter(
+                        match => match.trip1Id === tripId || match.trip2Id === tripId
+                    );
+                    setMatchCount(tripMatches.length);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching matches:', error);
+            setMatchCount(0);
+        }
+    };
+
     const handleDeleteTrip = async () => {
-        if (!userTrip) return;
+        if (!tripToDelete) return;
 
         setIsDeleting(true);
         try {
-            const result = await deleteTrip(userTrip.id);
+            const result = await deleteTrip(tripToDelete);
             if (result.success) {
                 setShowDeleteConfirm(false);
-                setUserTrip(null);
+                setTripToDelete(null);
                 alert('Trip cancelled successfully!');
             }
         } catch (error) {
@@ -41,10 +85,9 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack }) {
         }
     };
 
-    const handleEditTrip = () => {
-        if (userTrip && onEdit) {
-            onEdit(userTrip);
-        }
+    const confirmDelete = (trip) => {
+        setTripToDelete(trip.id);
+        setShowDeleteConfirm(true);
     };
 
     // Format date for display
@@ -67,11 +110,109 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack }) {
         return `${displayHour}:${minutes} ${ampm}`;
     };
 
-    // Check if trip is in the past
-    const isTripPast = (dateString, timeString) => {
-        const tripDateTime = new Date(`${dateString}T${timeString}`);
-        return tripDateTime < new Date();
-    };
+    // Render a trip card
+    const renderTripCard = (trip, isPast = false) => (
+        <div key={trip.id} className={`trip-details-card glass-card ${isPast ? 'past-trip-card' : ''}`}>
+            {/* Trip Status Badge */}
+            {!isPast && (
+                <div className="trip-status-badge-container">
+                    {matchCount > 0 ? (
+                        <span className="trip-status-badge matched">
+                            <CheckCircle size={14} />
+                            {matchCount} {matchCount === 1 ? 'Match' : 'Matches'} Found
+                        </span>
+                    ) : (
+                        <span className="trip-status-badge searching">
+                            <Users size={14} />
+                            Finding Companion...
+                        </span>
+                    )}
+                </div>
+            )}
+
+            {isPast && (
+                <div className="trip-status-badge-container">
+                    <span className="trip-status-badge completed">
+                        <CheckCircle size={14} />
+                        Completed
+                    </span>
+                </div>
+            )}
+
+            {/* Trip Details */}
+            <div className="trip-details-content">
+                <div className="trip-info-row destination-row">
+                    <div className="trip-info-icon destination-icon-bg">
+                        <Navigation size={24} />
+                    </div>
+                    <div className="trip-info-text">
+                        <span className="trip-info-label">Destination</span>
+                        <span className="trip-info-value destination-value">{trip.destination}</span>
+                    </div>
+                </div>
+
+                <div className="trip-info-row">
+                    <div className="trip-info-icon start-icon-bg">
+                        <MapPin size={20} />
+                    </div>
+                    <div className="trip-info-text">
+                        <span className="trip-info-label">Starting Point</span>
+                        <span className="trip-info-value">{trip.startPoint}</span>
+                    </div>
+                </div>
+
+                <div className="trip-info-row">
+                    <div className="trip-info-icon date-icon-bg">
+                        <Calendar size={20} />
+                    </div>
+                    <div className="trip-info-text">
+                        <span className="trip-info-label">Travel Date</span>
+                        <span className="trip-info-value">{formatDate(trip.date)}</span>
+                    </div>
+                </div>
+
+                <div className="trip-info-row">
+                    <div className="trip-info-icon time-icon-bg">
+                        <Clock size={20} />
+                    </div>
+                    <div className="trip-info-text">
+                        <span className="trip-info-label">Departure Time</span>
+                        <span className="trip-info-value">{formatTime(trip.time)}</span>
+                    </div>
+                </div>
+
+                <div className="trip-info-row">
+                    <div className="trip-info-icon contact-icon-bg">
+                        <Phone size={20} />
+                    </div>
+                    <div className="trip-info-text">
+                        <span className="trip-info-label">Contact Number</span>
+                        <span className="trip-info-value">{trip.contact}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Action Buttons - only for active trip */}
+            {!isPast && (
+                <div className="trip-actions">
+                    <button
+                        className="trip-action-btn edit-btn"
+                        onClick={() => onEdit(trip)}
+                    >
+                        <Edit size={18} />
+                        Edit Trip
+                    </button>
+                    <button
+                        className="trip-action-btn delete-btn"
+                        onClick={() => confirmDelete(trip)}
+                    >
+                        <Trash2 size={18} />
+                        Cancel Trip
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <div className="my-trip-view animate-fade-in">
@@ -80,95 +221,9 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack }) {
                 <p>Your current travel plan</p>
             </div>
 
-            {userTrip ? (
+            {activeTrip ? (
                 <div className="trip-details-container">
-                    <div className="trip-details-card glass-card">
-                        {/* Trip Status Badge */}
-                        <div className="trip-status-badge-container">
-                            {isTripPast(userTrip.date, userTrip.time) ? (
-                                <span className="trip-status-badge past">
-                                    <AlertCircle size={14} />
-                                    Past Trip
-                                </span>
-                            ) : (
-                                <span className="trip-status-badge active">
-                                    <Sparkles size={14} />
-                                    Active Trip
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Trip Details */}
-                        <div className="trip-details-content">
-                            <div className="trip-info-row destination-row">
-                                <div className="trip-info-icon destination-icon-bg">
-                                    <Navigation size={24} />
-                                </div>
-                                <div className="trip-info-text">
-                                    <span className="trip-info-label">Destination</span>
-                                    <span className="trip-info-value destination-value">{userTrip.destination}</span>
-                                </div>
-                            </div>
-
-                            <div className="trip-info-row">
-                                <div className="trip-info-icon start-icon-bg">
-                                    <MapPin size={20} />
-                                </div>
-                                <div className="trip-info-text">
-                                    <span className="trip-info-label">Starting Point</span>
-                                    <span className="trip-info-value">{userTrip.startPoint}</span>
-                                </div>
-                            </div>
-
-                            <div className="trip-info-row">
-                                <div className="trip-info-icon date-icon-bg">
-                                    <Calendar size={20} />
-                                </div>
-                                <div className="trip-info-text">
-                                    <span className="trip-info-label">Travel Date</span>
-                                    <span className="trip-info-value">{formatDate(userTrip.date)}</span>
-                                </div>
-                            </div>
-
-                            <div className="trip-info-row">
-                                <div className="trip-info-icon time-icon-bg">
-                                    <Clock size={20} />
-                                </div>
-                                <div className="trip-info-text">
-                                    <span className="trip-info-label">Departure Time</span>
-                                    <span className="trip-info-value">{formatTime(userTrip.time)}</span>
-                                </div>
-                            </div>
-
-                            <div className="trip-info-row">
-                                <div className="trip-info-icon contact-icon-bg">
-                                    <Phone size={20} />
-                                </div>
-                                <div className="trip-info-text">
-                                    <span className="trip-info-label">Contact Number</span>
-                                    <span className="trip-info-value">{userTrip.contact}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="trip-actions">
-                            <button
-                                className="trip-action-btn edit-btn"
-                                onClick={handleEditTrip}
-                            >
-                                <Edit size={18} />
-                                Edit Trip
-                            </button>
-                            <button
-                                className="trip-action-btn delete-btn"
-                                onClick={() => setShowDeleteConfirm(true)}
-                            >
-                                <Trash2 size={18} />
-                                Cancel Trip
-                            </button>
-                        </div>
-                    </div>
+                    {renderTripCard(activeTrip, false)}
                 </div>
             ) : (
                 // Empty State
@@ -186,6 +241,19 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack }) {
                         <Sparkles size={18} />
                         Register Trip
                     </button>
+                </div>
+            )}
+
+            {/* Old Trips Section */}
+            {pastTrips.length > 0 && (
+                <div className="old-trips-section">
+                    <div className="old-trips-header">
+                        <h3>Past Trips</h3>
+                        <p>Your travel history</p>
+                    </div>
+                    <div className="old-trips-list">
+                        {pastTrips.map(trip => renderTripCard(trip, true))}
+                    </div>
                 </div>
             )}
 

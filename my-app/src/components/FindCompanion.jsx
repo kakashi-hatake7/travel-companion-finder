@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { MapPin, Calendar, Navigation, Search, Plus, Phone, Clock, Train, Plane, Bus, User } from 'lucide-react';
 
 export default function FindCompanion({ trips, destinations, startPoints, onRegisterTrip }) {
@@ -10,6 +10,25 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
 
     const [destinationSearch, setDestinationSearch] = useState('');
     const [showDestinationDropdown, setShowDestinationDropdown] = useState(false);
+
+    // Ref for dropdown click-outside detection
+    const dropdownRef = useRef(null);
+
+    // Handle click outside dropdown to close it
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDestinationDropdown(false);
+            }
+        };
+
+        if (showDestinationDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [showDestinationDropdown]);
 
     // Filter trips based on selected filters
     const filteredTrips = useMemo(() => {
@@ -62,7 +81,7 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
                             <MapPin size={16} />
                             Destination
                         </label>
-                        <div className="filter-dropdown-container">
+                        <div className="filter-dropdown-container" ref={dropdownRef}>
                             <input
                                 type="text"
                                 placeholder="Select destination..."
@@ -73,26 +92,44 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
                                     setFilters({ ...filters, destination: e.target.value });
                                     setShowDestinationDropdown(true);
                                 }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Escape') {
+                                        setShowDestinationDropdown(false);
+                                    }
+                                }}
                                 className="filter-input"
                             />
-                            {showDestinationDropdown && (
-                                <div className="filter-dropdown-menu">
-                                    {filteredDestinations.map(dest => (
-                                        <div
-                                            key={dest}
-                                            className="filter-dropdown-item"
-                                            onClick={() => {
-                                                setFilters({ ...filters, destination: dest });
-                                                setDestinationSearch(dest);
-                                                setShowDestinationDropdown(false);
-                                            }}
-                                        >
-                                            <MapPin size={14} />
-                                            {dest}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            {showDestinationDropdown && (() => {
+                                const filteredDests = destinations.filter(dest =>
+                                    dest.toLowerCase().includes((destinationSearch || '').toLowerCase())
+                                ).slice(0, 6);
+
+                                return (
+                                    <div className="filter-dropdown-menu">
+                                        {filteredDests.length > 0 ? (
+                                            filteredDests.map(dest => (
+                                                <div
+                                                    key={dest}
+                                                    className="filter-dropdown-item"
+                                                    onClick={() => {
+                                                        setFilters({ ...filters, destination: dest });
+                                                        setDestinationSearch(dest);
+                                                        setShowDestinationDropdown(false);
+                                                    }}
+                                                >
+                                                    <MapPin size={14} />
+                                                    {dest}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="filter-dropdown-item dropdown-empty">
+                                                <MapPin size={14} />
+                                                No destinations found
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRight, Navigation, LogIn, LogOut, User, Send } from 'lucide-react';
 import { WavyBackground } from './components/ui/wavy-background';
 import { BackgroundGradient } from './components/ui/background-gradient';
@@ -101,6 +101,25 @@ export default function TravelCompanionFinder() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Ref for dropdown click-outside detection
+  const dropdownRef = useRef(null);
+
+  // Handle click outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isDropdownOpen]);
 
   // Listen to real-time trip updates from Firestore
   useEffect(() => {
@@ -438,7 +457,7 @@ export default function TravelCompanionFinder() {
                 {/* Destination Search */}
                 <div className="form-group">
                   <label>Destination</label>
-                  <div className="search-input-container">
+                  <div className="search-input-container" ref={dropdownRef}>
                     <Navigation size={18} className="input-icon" />
                     <input
                       type="text"
@@ -450,28 +469,43 @@ export default function TravelCompanionFinder() {
                         setFormData({ ...formData, destination: e.target.value });
                         setIsDropdownOpen(true);
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                          setIsDropdownOpen(false);
+                        }
+                      }}
                     />
-                    {isDropdownOpen && (
-                      <div className="dropdown-menu">
-                        {destinations
-                          .filter(d => d.toLowerCase().includes((searchTerm || '').toLowerCase()))
-                          .slice(0, 8)
-                          .map(dest => (
-                            <div
-                              key={dest}
-                              className="dropdown-item"
-                              onClick={() => {
-                                setFormData({ ...formData, destination: dest });
-                                setSearchTerm(dest);
-                                setIsDropdownOpen(false);
-                              }}
-                            >
+                    {isDropdownOpen && (() => {
+                      const filteredDests = destinations
+                        .filter(d => d.toLowerCase().includes((searchTerm || '').toLowerCase()))
+                        .slice(0, 6);
+
+                      return (
+                        <div className="dropdown-menu">
+                          {filteredDests.length > 0 ? (
+                            filteredDests.map(dest => (
+                              <div
+                                key={dest}
+                                className="dropdown-item"
+                                onClick={() => {
+                                  setFormData({ ...formData, destination: dest });
+                                  setSearchTerm(dest);
+                                  setIsDropdownOpen(false);
+                                }}
+                              >
+                                <MapPin size={14} />
+                                {dest}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="dropdown-item dropdown-empty">
                               <MapPin size={14} />
-                              {dest}
+                              No destinations found
                             </div>
-                          ))}
-                      </div>
-                    )}
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
