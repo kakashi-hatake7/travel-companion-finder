@@ -3,6 +3,7 @@ import { Users, MapPin, Clock, Phone, Search, Bell, Plus, X, Sparkles, ArrowRigh
 import { WavyBackground } from './components/ui/wavy-background';
 import { BackgroundGradient } from './components/ui/background-gradient';
 import ModernTimePicker from './components/ui/ModernTimePicker';
+import UniGoLogo from './components/ui/UniGoLogo';
 import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
 import InteractiveGlobe from './components/globe/InteractiveGlobe';
@@ -263,9 +264,7 @@ export default function TravelCompanionFinder() {
       <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
         <div className="header-content">
           <div className="logo-section" onClick={() => setView('home')}>
-            <div className="logo-icon">
-              <Users size={24} />
-            </div>
+            <UniGoLogo size={40} showText={false} />
             <div className="logo-text">
               <h1>UniGo</h1>
               <span>Find your travel companion</span>

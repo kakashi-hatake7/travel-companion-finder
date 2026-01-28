@@ -494,6 +494,156 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* Validation States */
+.form-group.success input,
+.form-group.success select,
+.form-group.success .search-input-container input {
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.form-group.success input:focus,
+.form-group.success select:focus,
+.form-group.success .search-input-container input:focus {
+  box-shadow:
+    0 0 0 3px rgba(34, 197, 94, 0.1),
+    0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
+.form-group.error input,
+.form-group.error select,
+.form-group.error .search-input-container input {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.form-group.error input:focus,
+.form-group.error select:focus,
+.form-group.error .search-input-container input:focus {
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.1),
+    0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Helper and Error Text */
+.helper-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: fadeIn 0.3s ease;
+}
+
+.helper-text svg {
+  flex-shrink: 0;
+}
+
+.error-text {
+  font-size: 12px;
+  color: rgba(239, 68, 68, 0.9);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: shake 0.3s ease, fadeIn 0.3s ease;
+}
+
+.success-text {
+  font-size: 12px;
+  color: rgba(34, 197, 94, 0.9);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Validation Icon */
+.validation-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-group.success .validation-icon {
+  color: rgba(34, 197, 94, 0.9);
+}
+
+.form-group.error .validation-icon {
+  color: rgba(239, 68, 68, 0.9);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+/* Loading State for Submit Button */
+.submit-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.submit-btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2590,5 +2740,296 @@
 
   .old-trips-list {
     gap: var(--spacing-md);
+  }
+}
+
+/* ========================================
+   Smart Autocomplete Features
+   ======================================== */
+
+/* Quick Destination Chips Container */
+.quick-chips-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.quick-chips-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.quick-chips-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(30, 30, 30, 0.6);
+  border: 1.5px solid rgba(100, 100, 100, 0.3);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  outline: none;
+}
+
+.quick-chip svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.quick-chip:hover {
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.quick-chip:hover svg {
+  opacity: 1;
+}
+
+.quick-chip.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.6);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.quick-chip:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Date Quick Pick Buttons */
+.quick-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.quick-button {
+  flex: 1;
+  min-width: 85px;
+  padding: 10px 16px;
+  background: rgba(30, 30, 30, 0.6);
+  border: 1.5px solid rgba(100, 100, 100, 0.3);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  outline: none;
+  text-transform: capitalize;
+}
+
+.quick-button:hover {
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  color: rgba(255, 255, 255, 1);
+}
+
+.quick-button.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.6);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.quick-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Time Presets */
+.time-presets {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.time-preset-button {
+  flex: 1;
+  min-width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  background: rgba(30, 30, 30, 0.6);
+  border: 1.5px solid rgba(100, 100, 100, 0.3);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  outline: none;
+}
+
+.preset-icon {
+  font-size: 18px;
+  line-height: 1;
+  filter: grayscale(0.3);
+  transition: filter 0.2s ease;
+}
+
+.preset-time {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.time-preset-button:hover {
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+}
+
+.time-preset-button:hover .preset-icon {
+  filter: grayscale(0);
+}
+
+.time-preset-button.active {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.6);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.time-preset-button.active .preset-icon {
+  filter: grayscale(0);
+}
+
+.time-preset-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Contact Autofill Button */
+.autofill-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 10px 16px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1.5px solid rgba(34, 197, 94, 0.3);
+  border-radius: 10px;
+  color: rgba(34, 197, 94, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  outline: none;
+  margin-bottom: var(--spacing-sm);
+  animation: slideInFromRight 0.3s ease;
+}
+
+.autofill-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.autofill-button:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+  color: rgba(34, 197, 94, 1);
+}
+
+.autofill-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Adjustments for Smart Autocomplete */
+@media (max-width: 768px) {
+  .quick-chips {
+    gap: 6px;
+  }
+
+  .quick-chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .quick-buttons {
+    gap: 6px;
+  }
+
+  .quick-button {
+    min-width: 70px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .time-presets {
+    gap: 6px;
+  }
+
+  .time-preset-button {
+    min-width: 60px;
+    padding: 8px 6px;
+  }
+
+  .preset-icon {
+    font-size: 16px;
+  }
+
+  .preset-time {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-chips-container {
+    gap: var(--spacing-sm);
+  }
+
+  .time-presets {
+    flex-wrap: wrap;
+  }
+
+  .time-preset-button {
+    flex: 1 1 calc(33.333% - 8px);
+    min-width: unset;
   }
 }

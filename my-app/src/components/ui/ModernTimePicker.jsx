@@ -119,6 +119,54 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                             </div>
                         </div>
 
+                        {/* Quick Time Presets */}
+                        <div className="time-presets">
+                            <button
+                                className="preset-btn"
+                                onClick={() => {
+                                    handleHourChange(6);
+                                    handleMinuteChange(0);
+                                    setPeriod('AM');
+                                    updateTime(6, 0, 'AM');
+                                }}
+                            >
+                                🌅 Morning (6 AM)
+                            </button>
+                            <button
+                                className="preset-btn"
+                                onClick={() => {
+                                    handleHourChange(2);
+                                    handleMinuteChange(0);
+                                    setPeriod('PM');
+                                    updateTime(2, 0, 'PM');
+                                }}
+                            >
+                                ☀️ Afternoon (2 PM)
+                            </button>
+                            <button
+                                className="preset-btn"
+                                onClick={() => {
+                                    handleHourChange(6);
+                                    handleMinuteChange(0);
+                                    setPeriod('PM');
+                                    updateTime(6, 0, 'PM');
+                                }}
+                            >
+                                🌆 Evening (6 PM)
+                            </button>
+                            <button
+                                className="preset-btn"
+                                onClick={() => {
+                                    handleHourChange(10);
+                                    handleMinuteChange(0);
+                                    setPeriod('PM');
+                                    updateTime(10, 0, 'PM');
+                                }}
+                            >
+                                🌙 Night (10 PM)
+                            </button>
+                        </div>
+
                         {/* Time Selectors */}
                         <div className="time-selectors">
                             <div className="time-selector-group">
@@ -153,25 +201,15 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
 
                             <div className="time-selector-group">
                                 <label>Period</label>
-                                <div className="period-toggle">
-                                    <button
-                                        className={`period-btn ${period === 'AM' ? 'selected' : ''}`}
-                                        onClick={() => {
-                                            setPeriod('AM');
-                                            updateTime(hours, minutes, 'AM');
-                                        }}
+                                <div className="period-toggle-container">
+                                    <div
+                                        className="period-toggle-switch"
+                                        onClick={handlePeriodToggle}
                                     >
-                                        AM
-                                    </button>
-                                    <button
-                                        className={`period-btn ${period === 'PM' ? 'selected' : ''}`}
-                                        onClick={() => {
-                                            setPeriod('PM');
-                                            updateTime(hours, minutes, 'PM');
-                                        }}
-                                    >
-                                        PM
-                                    </button>
+                                        <div className={`toggle-slider ${period === 'PM' ? 'pm' : 'am'}`}></div>
+                                        <span className={`toggle-option ${period === 'AM' ? 'active' : ''}`}>AM</span>
+                                        <span className={`toggle-option ${period === 'PM' ? 'active' : ''}`}>PM</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
