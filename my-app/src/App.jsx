@@ -247,7 +247,7 @@ export default function TravelCompanionFinder() {
               <Users size={24} />
             </div>
             <div className="logo-text">
-              <h1>TravelBuddy</h1>
+              <h1>UniGo</h1>
               <span>Find your travel companion</span>
             </div>
           </div>
@@ -629,7 +629,7 @@ export default function TravelCompanionFinder() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>© 2026 TravelBuddy. Travel smarter, together.</p>
+        <p>© 2026 UniGo. Travel smarter, together.</p>
       </footer>
 
       {/* Auth Modal */}

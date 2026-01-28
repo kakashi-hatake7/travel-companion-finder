@@ -116,7 +116,7 @@ export default function AuthPage({ onClose, onSuccess }) {
                         <Sparkles size={28} />
                     </div>
                     <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
-                    <p>{isLogin ? 'Sign in to continue your journey' : 'Join TravelBuddy today'}</p>
+                    <p>{isLogin ? 'Sign in to continue your journey' : 'Join UniGo today'}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">
