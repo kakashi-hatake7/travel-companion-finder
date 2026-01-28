@@ -4,6 +4,7 @@ import { WavyBackground } from './components/ui/wavy-background';
 import { BackgroundGradient } from './components/ui/background-gradient';
 import ModernTimePicker from './components/ui/ModernTimePicker';
 import UniGoLogo from './components/ui/UniGoLogo';
+import { ToastContainer, useToast } from './components/ui/Toast';
 import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
 import InteractiveGlobe from './components/globe/InteractiveGlobe';
@@ -44,6 +45,21 @@ export default function TravelCompanionFinder() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [editingTripId, setEditingTripId] = useState(null);
+
+  // Toast notifications
+  const { toasts, addToast, removeToast } = useToast();
+
+  // Smart autocomplete state
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [savedContact, setSavedContact] = useState('');
+  const popularDestinations = ['Delhi', 'Mumbai', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Jaipur'];
+  const timePresets = [
+    { label: '6 AM', time: '06:00', icon: '🌅' },
+    { label: '9 AM', time: '09:00', icon: '☀️' },
+    { label: '2 PM', time: '14:00', icon: '🌤️' },
+    { label: '6 PM', time: '18:00', icon: '🌆' },
+    { label: '9 PM', time: '21:00', icon: '🌙' }
+  ];
 
   const destinations = [
     'Abohar', 'Abuja', 'Adoni', 'Agartala', 'Agra', 'Ahmedabad', 'Ahmednagar', 'Aizawl', 'Ajmer', 'Akola',
@@ -90,6 +106,18 @@ export default function TravelCompanionFinder() {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Load saved preferences from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('recentSearches');
+      if (stored) setRecentSearches(JSON.parse(stored));
+      const contact = localStorage.getItem('savedContact');
+      if (contact) setSavedContact(contact);
+    } catch (e) {
+      console.error('Error loading preferences:', e);
+    }
   }, []);
 
   // Listen for auth state changes and ensure user profile exists
@@ -227,6 +255,13 @@ export default function TravelCompanionFinder() {
             alert('Trip registered successfully! We\'ll notify you when we find a match.');
           }
 
+          // Save contact and destination for future autofill
+          localStorage.setItem('savedContact', formData.contact);
+          setSavedContact(formData.contact);
+          const updatedSearches = [formData.destination, ...recentSearches.filter(d => d !== formData.destination)].slice(0, 5);
+          setRecentSearches(updatedSearches);
+          localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+
           // Reset form
           setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
           setSearchTerm('');
@@ -237,6 +272,36 @@ export default function TravelCompanionFinder() {
       console.error('Error submitting trip:', error);
       alert(editingTripId ? 'Failed to update trip. Please try again.' : 'Failed to register trip. Please try again.');
     }
+  };
+
+  // Quick selection helpers
+  const handleQuickDestination = (dest) => {
+    setFormData({ ...formData, destination: dest });
+    setSearchTerm(dest);
+    setIsDropdownOpen(false);
+    // Update recent searches
+    const updated = [dest, ...recentSearches.filter(d => d !== dest)].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem('recentSearches', JSON.stringify(updated));
+  };
+
+  const handleQuickDate = (type) => {
+    const today = new Date();
+    let target = new Date();
+    if (type === 'tomorrow') target.setDate(today.getDate() + 1);
+    else if (type === 'weekend') {
+      const daysUntilSat = (6 - today.getDay() + 7) % 7 || 7;
+      target.setDate(today.getDate() + daysUntilSat);
+    }
+    setFormData({ ...formData, date: target.toISOString().split('T')[0] });
+  };
+
+  const handleTimePreset = (time) => {
+    setFormData({ ...formData, time });
+  };
+
+  const handleContactAutofill = () => {
+    if (savedContact) setFormData({ ...formData, contact: savedContact });
   };
 
   const filteredTrips = trips.filter(trip => {
@@ -260,6 +325,9 @@ export default function TravelCompanionFinder() {
       speed="slow"
       waveOpacity={0.5}
     >
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+
       {/* Header */}
       <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
         <div className="header-content">
@@ -457,6 +525,43 @@ export default function TravelCompanionFinder() {
                 {/* Destination Search */}
                 <div className="form-group">
                   <label>Destination</label>
+
+                  {/* Quick Destination Chips */}
+                  <div className="quick-chips-section">
+                    {recentSearches.length > 0 && (
+                      <div className="quick-chips-row">
+                        <span className="quick-label">Recent</span>
+                        <div className="quick-chips">
+                          {recentSearches.slice(0, 3).map(dest => (
+                            <button
+                              key={dest}
+                              type="button"
+                              className={`quick-chip ${formData.destination === dest ? 'active' : ''}`}
+                              onClick={() => handleQuickDestination(dest)}
+                            >
+                              {dest}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="quick-chips-row">
+                      <span className="quick-label">Popular</span>
+                      <div className="quick-chips">
+                        {popularDestinations.slice(0, 4).map(dest => (
+                          <button
+                            key={dest}
+                            type="button"
+                            className={`quick-chip ${formData.destination === dest ? 'active' : ''}`}
+                            onClick={() => handleQuickDestination(dest)}
+                          >
+                            {dest}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="search-input-container" ref={dropdownRef}>
                     <Navigation size={18} className="input-icon" />
                     <input
@@ -527,26 +632,57 @@ export default function TravelCompanionFinder() {
                 <div className="form-row">
                   <div className="form-group">
                     <label>Date</label>
+                    {/* Date Quick Picks */}
+                    <div className="quick-date-buttons">
+                      <button type="button" className="quick-date-btn" onClick={() => handleQuickDate('today')}>Today</button>
+                      <button type="button" className="quick-date-btn" onClick={() => handleQuickDate('tomorrow')}>Tomorrow</button>
+                      <button type="button" className="quick-date-btn" onClick={() => handleQuickDate('weekend')}>Weekend</button>
+                    </div>
                     <input
                       type="date"
                       value={formData.date}
                       min={new Date().toISOString().split('T')[0]}
                       onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     />
+                    {/* Custom Time Input - under Date */}
+                    <div className="custom-time-section">
+                      <span className="custom-time-label">Custom time:</span>
+                      <input
+                        type="time"
+                        value={formData.time}
+                        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                        className="custom-time-input"
+                      />
+                    </div>
                   </div>
                   <div className="form-group">
-                    <label>Time</label>
-                    <ModernTimePicker
-                      value={formData.time}
-                      onChange={(time) => setFormData({ ...formData, time })}
-                      placeholder="Select time"
-                    />
+                    <label>Quick Time</label>
+                    {/* Time Presets Grid */}
+                    <div className="time-presets-grid">
+                      {timePresets.map(preset => (
+                        <button
+                          key={preset.time}
+                          type="button"
+                          className={`time-preset-btn ${formData.time === preset.time ? 'active' : ''}`}
+                          onClick={() => handleTimePreset(preset.time)}
+                        >
+                          <span className="time-icon">{preset.icon}</span>
+                          <span className="time-label">{preset.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 {/* Contact */}
                 <div className="form-group">
                   <label>Contact Number</label>
+                  {/* Contact Autofill */}
+                  {savedContact && !formData.contact && (
+                    <button type="button" className="autofill-btn" onClick={handleContactAutofill}>
+                      <Phone size={14} /> Use saved: {savedContact}
+                    </button>
+                  )}
                   <input
                     type="tel"
                     value={formData.contact}
