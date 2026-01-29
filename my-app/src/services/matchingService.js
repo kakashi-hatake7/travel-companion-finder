@@ -5,7 +5,10 @@ import {
     where,
     getDocs,
     onSnapshot,
-    serverTimestamp
+    serverTimestamp,
+    doc,
+    updateDoc,
+    getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -179,6 +182,109 @@ export const processNewTripMatches = async (newTrip) => {
         };
     } catch (error) {
         console.error('Error processing trip matches:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Get detailed match information for a specific trip
+ * Returns companion details (name, contact, time)
+ */
+export const getMatchDetailsForTrip = async (tripId, userId) => {
+    try {
+        const matchesRef = collection(db, 'matches');
+
+        // Find matches where this trip is involved
+        const q1 = query(matchesRef, where('trip1Id', '==', tripId));
+        const q2 = query(matchesRef, where('trip2Id', '==', tripId));
+
+        const [snapshot1, snapshot2] = await Promise.all([
+            getDocs(q1),
+            getDocs(q2)
+        ]);
+
+        const matchDetails = [];
+
+        // Process matches
+        const processMatch = async (matchDoc) => {
+            const match = { id: matchDoc.id, ...matchDoc.data() };
+
+            // Skip rejected matches
+            if (match.status === 'rejected') return null;
+
+            // Determine which user is the companion (the other user)
+            const isUser1 = match.user1Id === userId;
+            const companionTripId = isUser1 ? match.trip2Id : match.trip1Id;
+
+            // Fetch companion's trip details
+            const tripDoc = await getDoc(doc(db, 'trips', companionTripId));
+            if (!tripDoc.exists()) return null;
+
+            const companionTrip = tripDoc.data();
+
+            return {
+                matchId: match.id,
+                companionName: isUser1 ? match.user2Name : match.user1Name,
+                companionUserId: isUser1 ? match.user2Id : match.user1Id,
+                companionContact: companionTrip.contact,
+                companionTime: companionTrip.time,
+                destination: match.destination,
+                startPoint: match.startPoint,
+                date: match.date,
+                status: match.status || 'pending',
+                matchedAt: match.matchedAt
+            };
+        };
+
+        // Process all matches
+        for (const matchDoc of snapshot1.docs) {
+            const detail = await processMatch(matchDoc);
+            if (detail) matchDetails.push(detail);
+        }
+        for (const matchDoc of snapshot2.docs) {
+            const detail = await processMatch(matchDoc);
+            if (detail) matchDetails.push(detail);
+        }
+
+        return { success: true, companions: matchDetails };
+    } catch (error) {
+        console.error('Error getting match details:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Confirm/select a companion from matches
+ */
+export const confirmMatch = async (matchId, userId) => {
+    try {
+        const matchRef = doc(db, 'matches', matchId);
+        await updateDoc(matchRef, {
+            status: 'confirmed',
+            confirmedBy: userId,
+            confirmedAt: serverTimestamp()
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Error confirming match:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Reject a companion from matches
+ */
+export const rejectMatch = async (matchId, userId) => {
+    try {
+        const matchRef = doc(db, 'matches', matchId);
+        await updateDoc(matchRef, {
+            status: 'rejected',
+            rejectedBy: userId,
+            rejectedAt: serverTimestamp()
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Error rejecting match:', error);
         return { success: false, error: error.message };
     }
 };

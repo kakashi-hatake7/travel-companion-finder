@@ -706,6 +706,7 @@ export default function TravelCompanionFinder() {
           <MyTrip
             currentUser={currentUser}
             trips={trips}
+            addToast={addToast}
             onEdit={(trip) => {
               setFormData({
                 destination: trip.destination,
