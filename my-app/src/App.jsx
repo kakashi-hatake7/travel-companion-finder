@@ -248,11 +248,11 @@ export default function TravelCompanionFinder() {
             userDisplayName: currentUser.displayName || 'Anonymous',
           });
 
-          // Show success message
+          // Show success message with toast
           if (matchResult.matchCount > 0) {
-            alert(`Trip registered! Found ${matchResult.matchCount} potential travel companion(s)!`);
+            addToast(`🎉 Trip registered! Found ${matchResult.matchCount} travel companion(s)!`, 'success', 5000);
           } else {
-            alert('Trip registered successfully! We\'ll notify you when we find a match.');
+            addToast('✅ Trip registered! We\'ll notify you when we find a match.', 'success', 5000);
           }
 
           // Save contact and destination for future autofill
@@ -270,7 +270,7 @@ export default function TravelCompanionFinder() {
       }
     } catch (error) {
       console.error('Error submitting trip:', error);
-      alert(editingTripId ? 'Failed to update trip. Please try again.' : 'Failed to register trip. Please try again.');
+      addToast(editingTripId ? '❌ Failed to update trip. Please try again.' : '❌ Failed to register trip. Please try again.', 'error', 5000);
     }
   };
 
