@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Phone, Calendar, Navigation, Edit, Trash2, AlertCircle, Sparkles, Users, CheckCircle, ChevronDown, ChevronUp, UserCheck, X } from 'lucide-react';
+import { MapPin, Clock, Phone, Calendar, Navigation, Edit, Trash2, AlertCircle, Sparkles, Users, CheckCircle, ChevronDown, ChevronUp, UserCheck, X, Briefcase } from 'lucide-react';
 import { deleteTrip } from '../services/tripService';
 import { getMatchesForUser, getMatchDetailsForTrip, confirmMatch, rejectMatch } from '../services/matchingService';
+import TripTools from './productivity/TripTools';
 
 export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast }) {
     const [activeTab, setActiveTab] = useState('active'); // 'active' or 'past'
@@ -13,6 +14,7 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [tripToDelete, setTripToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showTripTools, setShowTripTools] = useState(null); // holds { tripId, tripData, companionId, companionName }
     const [matchCounts, setMatchCounts] = useState({});
 
     // Separate active and past trips
@@ -337,6 +339,23 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                     </div>
                 )}
 
+                {/* Trip Tools Button - show when companion is confirmed */}
+                {!isPast && confirmedCompanion && (
+                    <button
+                        className="trip-tools-btn"
+                        onClick={() => setShowTripTools({
+                            tripId: trip.id,
+                            tripData: trip,
+                            companionId: confirmedCompanion.companionId,
+                            companionName: confirmedCompanion.companionName
+                        })}
+                    >
+                        <Briefcase size={18} />
+                        Trip Tools
+                        <span className="tools-badge">NEW</span>
+                    </button>
+                )}
+
                 {/* Action Buttons - only for active trip */}
                 {!isPast && (
                     <div className="trip-actions">
@@ -462,6 +481,23 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                                 {isDeleting ? 'Cancelling...' : 'Yes, Cancel Trip'}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Trip Tools Modal */}
+            {showTripTools && (
+                <div className="modal-overlay" onClick={() => setShowTripTools(null)}>
+                    <div className="trip-tools-modal" onClick={(e) => e.stopPropagation()}>
+                        <TripTools
+                            tripId={showTripTools.tripId}
+                            tripData={showTripTools.tripData}
+                            currentUser={currentUser}
+                            companionId={showTripTools.companionId}
+                            companionName={showTripTools.companionName}
+                            addToast={addToast}
+                            onClose={() => setShowTripTools(null)}
+                        />
                     </div>
                 </div>
             )}
