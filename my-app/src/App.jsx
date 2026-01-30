@@ -12,6 +12,7 @@ import ProfilePage from './components/profile/ProfilePage';
 import GoogleEarthGlobe from './components/globe/LeafletGlobe';
 import FindCompanion from './components/FindCompanion';
 import MyTrip from './components/MyTrip';
+import LoadingButton from './components/ui/LoadingButton';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -51,6 +52,9 @@ export default function TravelCompanionFinder() {
 
   // Mobile navigation state
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  // Loading states for buttons
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Toast notifications
   const { toasts, addToast, removeToast } = useToast();
@@ -233,6 +237,7 @@ export default function TravelCompanionFinder() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       // If editing existing trip, update it
       if (editingTripId) {
@@ -284,6 +289,8 @@ export default function TravelCompanionFinder() {
     } catch (error) {
       console.error('Error submitting trip:', error);
       addToast(editingTripId ? '❌ Failed to update trip. Please try again.' : '❌ Failed to register trip. Please try again.', 'error', 5000);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -705,10 +712,14 @@ export default function TravelCompanionFinder() {
                   />
                 </div>
 
-                <button className="submit-btn" onClick={handleSubmit}>
+                <LoadingButton
+                  className="submit-btn"
+                  onClick={handleSubmit}
+                  isLoading={isSubmitting}
+                >
                   <Sparkles size={18} />
                   {editingTripId ? 'Update Trip' : 'Register Trip'}
-                </button>
+                </LoadingButton>
               </div>
             </div>
           </div>
