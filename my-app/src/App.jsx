@@ -9,7 +9,7 @@ import MobileBottomNav from './components/ui/MobileBottomNav';
 import MobileMenu from './components/ui/MobileMenu';
 import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
-import InteractiveGlobe from './components/globe/InteractiveGlobe';
+import GoogleEarthGlobe from './components/globe/LeafletGlobe';
 import FindCompanion from './components/FindCompanion';
 import MyTrip from './components/MyTrip';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
@@ -742,9 +742,9 @@ export default function TravelCompanionFinder() {
           />
         )}
 
-        {/* Search View - Interactive Globe */}
+        {/* Search View - Google Earth Globe */}
         {view === 'search' && (
-          <InteractiveGlobe
+          <GoogleEarthGlobe
             trips={trips}
             destinations={destinations}
             onRegisterTrip={(destination) => {
