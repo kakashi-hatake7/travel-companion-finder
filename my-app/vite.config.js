@@ -12,7 +12,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          'three-vendor': ['three', 'react-globe.gl']
+          'leaflet-vendor': ['leaflet', 'react-leaflet']
         }
       }
     }
