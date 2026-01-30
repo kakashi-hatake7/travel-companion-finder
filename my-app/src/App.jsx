@@ -5,6 +5,8 @@ import { BackgroundGradient } from './components/ui/background-gradient';
 import ModernTimePicker from './components/ui/ModernTimePicker';
 import UniGoLogo from './components/ui/UniGoLogo';
 import { ToastContainer, useToast } from './components/ui/Toast';
+import MobileBottomNav from './components/ui/MobileBottomNav';
+import MobileMenu from './components/ui/MobileMenu';
 import AuthPage from './components/auth/AuthPage';
 import ProfilePage from './components/profile/ProfilePage';
 import InteractiveGlobe from './components/globe/InteractiveGlobe';
@@ -45,6 +47,9 @@ export default function TravelCompanionFinder() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [editingTripId, setEditingTripId] = useState(null);
+
+  // Mobile navigation state
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   // Toast notifications
   const { toasts, addToast, removeToast } = useToast();
@@ -797,6 +802,28 @@ export default function TravelCompanionFinder() {
           </div>
         )}
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        activeView={view}
+        onNavigate={(newView) => {
+          setView(newView);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onMenuToggle={() => setShowMobileMenu(!showMobileMenu)}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <MobileMenu
+        isOpen={showMobileMenu}
+        onClose={() => setShowMobileMenu(false)}
+        currentUser={currentUser}
+        notificationCount={notifications.length}
+        onNavigate={(newView) => setView(newView)}
+        onShowProfile={() => setShowProfileModal(true)}
+        onShowAuth={() => setShowAuthModal(true)}
+        onLogout={handleLogout}
+      />
 
       {/* Footer */}
       <footer className="footer">
