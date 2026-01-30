@@ -17,6 +17,7 @@ import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
 import { createTrip, listenToTrips, updateTrip } from './services/tripService';
 import { processNewTripMatches, getMatchesForUser } from './services/matchingService';
+import { setUserContext, addBreadcrumb } from './services/monitoring';
 import './App.css';
 
 export default function TravelCompanionFinder() {
@@ -129,9 +130,16 @@ export default function TravelCompanionFinder() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+
+      // Set user context for Sentry error tracking
+      setUserContext(user);
+
       if (user) {
         // Ensure user profile exists in Firestore
         await ensureUserProfile(user);
+        addBreadcrumb('User logged in', 'auth', { userId: user.uid });
+      } else {
+        addBreadcrumb('User logged out', 'auth');
       }
     });
     return () => unsubscribe();
