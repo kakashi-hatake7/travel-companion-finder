@@ -17,7 +17,8 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
 import { createTrip, listenToTrips, updateTrip } from './services/tripService';
-import { processNewTripMatches, getMatchesForUser } from './services/matchingService';
+import { processNewTripMatches } from './services/matchingService';
+import { listenToNotifications, deleteNotification } from './services/notificationService';
 import { setUserContext, addBreadcrumb } from './services/monitoring';
 import './App.css';
 
@@ -132,6 +133,28 @@ export default function TravelCompanionFinder() {
 
   // Listen for auth state changes and ensure user profile exists
   useEffect(() => {
+    // Handle redirect result from Google Sign-In
+    const handleRedirectResult = async () => {
+      try {
+        const { getRedirectResult } = await import('firebase/auth');
+        const result = await getRedirectResult(auth);
+
+        if (result) {
+          // User successfully signed in via redirect
+          addToast('✅ Successfully signed in with Google!', 'success', 3000);
+          addBreadcrumb('Google sign-in successful', 'auth', { userId: result.user.uid });
+        }
+      } catch (error) {
+        if (error.code && error.code !== 'auth/popup-closed-by-user') {
+          console.error('Redirect result error:', error);
+          addToast('❌ Google sign-in failed. Please try again.', 'error', 5000);
+          addBreadcrumb('Google sign-in failed', 'auth', { error: error.message });
+        }
+      }
+    };
+
+    handleRedirectResult();
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
 
@@ -151,6 +174,7 @@ export default function TravelCompanionFinder() {
 
   // Ref for dropdown click-outside detection
   const dropdownRef = useRef(null);
+  const notificationsInitialized = useRef(false);
 
   // Handle click outside dropdown to close it
   useEffect(() => {
@@ -181,6 +205,33 @@ export default function TravelCompanionFinder() {
     });
 
     return () => unsubscribe();
+  }, [currentUser, addToast]);
+
+  // Listen to real-time notifications for current user
+  useEffect(() => {
+    if (!currentUser) {
+      setNotifications([]);
+      notificationsInitialized.current = false;
+      return;
+    }
+
+    const unsubscribe = listenToNotifications(currentUser.uid, ({ notifications: nextNotifications, changes }) => {
+      setNotifications(nextNotifications);
+
+      if (notificationsInitialized.current) {
+        const added = changes.filter(change => change.type === 'added');
+        added.forEach(change => {
+          addToast(`🔔 ${change.title || 'New notification'}`, 'info', 5000);
+        });
+      } else {
+        notificationsInitialized.current = true;
+      }
+    });
+
+    return () => {
+      notificationsInitialized.current = false;
+      unsubscribe();
+    };
   }, [currentUser]);
 
   // Handle logout
@@ -193,30 +244,19 @@ export default function TravelCompanionFinder() {
     }
   };
 
-  useEffect(() => {
-    if (trips.length > 0) {
-      checkForMatches(trips[trips.length - 1]);
-    }
-  }, [trips]);
+  const unreadNotifications = notifications.filter((notif) => !notif.read);
+  const matchFoundCount = notifications.filter((notif) => notif.type === 'match_found').length;
 
-  const checkForMatches = (newTrip) => {
-    const matches = trips.filter(trip =>
-      trip.id !== newTrip.id &&
-      trip.destination === newTrip.destination &&
-      trip.startPoint === newTrip.startPoint &&
-      trip.date === newTrip.date &&
-      Math.abs(parseInt(trip.time.split(':')[0]) - parseInt(newTrip.time.split(':')[0])) <= 1
-    );
-
-    if (matches.length > 0) {
-      const newNotifications = matches.map(match => ({
-        id: Date.now() + Math.random(),
-        message: `Match found! ${match.destination} from ${match.startPoint} on ${match.date}`,
-        contact: match.contact,
-        time: new Date().toLocaleTimeString()
-      }));
-      setNotifications(prev => [...newNotifications, ...prev]);
-    }
+  const formatNotificationTime = (timestamp) => {
+    if (!timestamp) return '';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
   };
 
   const handleSubmit = async () => {
@@ -254,7 +294,8 @@ export default function TravelCompanionFinder() {
         const result = await createTrip(
           formData,
           currentUser.uid,
-          currentUser.displayName || 'Anonymous'
+          currentUser.displayName || 'Anonymous',
+          currentUser.email || ''
         );
 
         if (result.success) {
@@ -264,6 +305,7 @@ export default function TravelCompanionFinder() {
             ...formData,
             userId: currentUser.uid,
             userDisplayName: currentUser.displayName || 'Anonymous',
+            userEmail: currentUser.email || '',
           });
 
           // Show success message with toast
@@ -331,8 +373,13 @@ export default function TravelCompanionFinder() {
     return true;
   });
 
-  const removeNotification = (id) => {
-    setNotifications(notifications.filter(n => n.id !== id));
+  const removeNotification = async (id) => {
+    try {
+      await deleteNotification(id);
+    } catch (error) {
+      console.error('Error removing notification:', error);
+      addToast('Failed to remove notification', 'error', 4000);
+    }
   };
   return (
     <WavyBackground
@@ -438,8 +485,8 @@ export default function TravelCompanionFinder() {
               onClick={() => setView('notifications')}
             >
               <Bell size={20} />
-              {notifications.length > 0 && (
-                <span className="notification-badge">{notifications.length}</span>
+              {unreadNotifications.length > 0 && (
+                <span className="notification-badge">{unreadNotifications.length}</span>
               )}
             </button>
           </div>
@@ -524,7 +571,7 @@ export default function TravelCompanionFinder() {
                 </div>
                 <div className="stat-divider" />
                 <div className="stat-item">
-                  <span className="stat-number">{notifications.length}</span>
+                  <span className="stat-number">{matchFoundCount}</span>
                   <span className="stat-label">Matches Found</span>
                 </div>
               </div>
@@ -793,19 +840,27 @@ export default function TravelCompanionFinder() {
                 notifications.map((notif, index) => (
                   <div
                     key={notif.id}
-                    className="notification-card glass-card animate-slide-in"
+                    className={`notification-card glass-card animate-slide-in ${notif.read ? 'notification-read' : ''}`}
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="notification-content">
-                      <div className="notification-icon">
+                      <div className={`notification-icon ${notif.type || ''}`}>
                         <Sparkles size={20} />
                       </div>
                       <div className="notification-text">
+                        <p className="notification-title">{notif.title || 'Notification'}</p>
                         <p className="notification-message">{notif.message}</p>
-                        <p className="notification-contact">
-                          <Phone size={14} />
-                          Contact: {notif.contact}
-                        </p>
+                        <div className="notification-meta">
+                          <span>{formatNotificationTime(notif.createdAt)}</span>
+                          {notif.type === 'match_found' && <span>Open My Trips to choose your companion</span>}
+                          {notif.type === 'companion_selected' && <span>Your companion is confirmed</span>}
+                        </div>
+                        <button
+                          className="notification-action-btn"
+                          onClick={() => setView('myTrip')}
+                        >
+                          View My Trips
+                        </button>
                       </div>
                     </div>
                     <button
@@ -837,7 +892,7 @@ export default function TravelCompanionFinder() {
         isOpen={showMobileMenu}
         onClose={() => setShowMobileMenu(false)}
         currentUser={currentUser}
-        notificationCount={notifications.length}
+        notificationCount={unreadNotifications.length}
         onNavigate={(newView) => setView(newView)}
         onShowProfile={() => setShowProfileModal(true)}
         onShowAuth={() => setShowAuthModal(true)}

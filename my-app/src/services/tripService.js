@@ -19,7 +19,7 @@ import { db } from '../firebase';
 /**
  * Create a new trip in Firestore
  */
-export const createTrip = async (tripData, userId, userDisplayName) => {
+export const createTrip = async (tripData, userId, userDisplayName, userEmail) => {
     try {
         // Validate required fields
         if (!tripData.destination || !tripData.startPoint || !tripData.date || !tripData.time) {
@@ -34,6 +34,7 @@ export const createTrip = async (tripData, userId, userDisplayName) => {
         const trip = {
             userId,
             userDisplayName: userDisplayName || 'Anonymous',
+            userEmail: userEmail || '',
             destination: tripData.destination,
             startPoint: tripData.startPoint,
             date: tripData.date,

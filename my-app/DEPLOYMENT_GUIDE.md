@@ -92,6 +92,26 @@ When you first run queries, Firebase will show errors with links to create index
   - `matchedAt` (Descending)
 - **Query scope:** Collection
 
+#### Index 4: User Notifications Query
+- **Collection ID:** `notifications`
+- **Fields to index:**
+  - `userId` (Ascending)
+  - `createdAt` (Descending)
+- **Query scope:** Collection
+
+---
+
+## Step 2.5: Enable Email Notifications (Trigger Email Extension)
+
+To send emails when a match is found or a companion is selected, install Firebase's **Trigger Email** extension:
+
+1. Go to Firebase Console → Extensions
+2. Search for **Trigger Email**
+3. Install and configure it for your project
+4. Use the default collection name `mail` (this app writes to `mail`)
+
+Once installed, the app will write email requests to the `mail` collection automatically.
+
 ---
 
 ## Step 3: Update Vercel Deployment
@@ -205,6 +225,7 @@ users/{userId}
 trips/{tripId}
 ├── userId: "abc123"
 ├── userDisplayName: "John Doe"
+├── userEmail: "john@example.com"
 ├── destination: "Paris"
 ├── startPoint: "Airport"
 ├── date: "2026-02-15"
@@ -224,11 +245,42 @@ matches/{matchId}
 ├── user2Id: "user2"
 ├── user1Name: "John Doe"
 ├── user2Name: "Jane Smith"
+├── user1Email: "john@example.com"
+├── user2Email: "jane@example.com"
 ├── destination: "Paris"
 ├── startPoint: "Airport"
 ├── date: "2026-02-15"
 ├── matchedAt: Timestamp
-└── notified: false
+├── notified: false
+└── status: "pending" | "confirmed" | "rejected"
+```
+
+### Collection: `notifications`
+```javascript
+notifications/{notificationId}
+├── userId: "abc123"
+├── type: "match_found" | "companion_selected"
+├── title: "New travel match found"
+├── message: "..."
+├── tripId: "xyz789"
+├── matchId: "match123"
+├── actorId: "user456"
+├── actorName: "Jane Smith"
+├── createdAt: Timestamp
+└── read: false
+```
+
+### Collection: `mail` (Trigger Email Extension)
+```javascript
+mail/{mailId}
+├── to: "user@example.com"
+├── message:
+│   ├── subject: "New match for Paris"
+│   ├── text: "..."
+│   └── html: "..."
+├── createdAt: Timestamp
+├── userId: "abc123"
+└── type: "match_found" | "companion_selected"
 ```
 
 ---

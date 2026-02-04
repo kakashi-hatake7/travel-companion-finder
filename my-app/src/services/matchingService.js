@@ -11,6 +11,8 @@ import {
     getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { createNotification } from './notificationService';
+import { queueEmail } from './emailService';
 
 /**
  * Find matching trips based on destination, start point, date, and time
@@ -64,6 +66,168 @@ const parseTime = (timeString) => {
     return hours * 60 + minutes;
 };
 
+const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const hour = Number.isNaN(hours) ? 0 : hours;
+    const minute = Number.isNaN(minutes) ? 0 : minutes;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${String(minute).padStart(2, '0')} ${ampm}`;
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+};
+
+const getUserEmail = async (userId) => {
+    if (!userId) return null;
+    try {
+        const userSnap = await getDoc(doc(db, 'users', userId));
+        if (!userSnap.exists()) return null;
+        return userSnap.data().email || null;
+    } catch (error) {
+        console.error('Error fetching user email:', error);
+        return null;
+    }
+};
+
+const notifyMatchFound = async ({ matchId, newTrip, matchingTrip }) => {
+    const dateLabel = formatDate(newTrip.date);
+    const newTripTime = formatTime(newTrip.time);
+    const matchingTripTime = formatTime(matchingTrip.time);
+
+    const notifications = [
+        createNotification({
+            userId: newTrip.userId,
+            type: 'match_found',
+            title: 'New travel match found',
+            message: `${matchingTrip.userDisplayName || 'Traveler'} is heading to ${newTrip.destination} from ${newTrip.startPoint} on ${dateLabel} around ${matchingTripTime}.`,
+            tripId: newTrip.id,
+            matchId,
+            actorId: matchingTrip.userId,
+            actorName: matchingTrip.userDisplayName || 'Traveler',
+            meta: {
+                destination: newTrip.destination,
+                startPoint: newTrip.startPoint,
+                date: newTrip.date,
+                time: newTrip.time
+            }
+        }),
+        createNotification({
+            userId: matchingTrip.userId,
+            type: 'match_found',
+            title: 'New travel match found',
+            message: `${newTrip.userDisplayName || 'Traveler'} is heading to ${matchingTrip.destination} from ${matchingTrip.startPoint} on ${dateLabel} around ${newTripTime}.`,
+            tripId: matchingTrip.id,
+            matchId,
+            actorId: newTrip.userId,
+            actorName: newTrip.userDisplayName || 'Traveler',
+            meta: {
+                destination: matchingTrip.destination,
+                startPoint: matchingTrip.startPoint,
+                date: matchingTrip.date,
+                time: matchingTrip.time
+            }
+        })
+    ];
+
+    const [newTripEmail, matchingTripEmail] = await Promise.all([
+        newTrip.userEmail || getUserEmail(newTrip.userId),
+        matchingTrip.userEmail || getUserEmail(matchingTrip.userId)
+    ]);
+
+    const emails = [];
+
+    if (newTripEmail) {
+        emails.push(queueEmail({
+            to: newTripEmail,
+            subject: `New match for ${newTrip.destination}`,
+            text: `Good news! ${matchingTrip.userDisplayName || 'A traveler'} is going to ${newTrip.destination} from ${newTrip.startPoint} on ${dateLabel} around ${matchingTripTime}. Open UniGo to choose your companion.`,
+            userId: newTrip.userId,
+            type: 'match_found',
+            meta: { matchId, tripId: newTrip.id }
+        }));
+    }
+
+    if (matchingTripEmail) {
+        emails.push(queueEmail({
+            to: matchingTripEmail,
+            subject: `New match for ${matchingTrip.destination}`,
+            text: `Good news! ${newTrip.userDisplayName || 'A traveler'} is going to ${matchingTrip.destination} from ${matchingTrip.startPoint} on ${dateLabel} around ${newTripTime}. Open UniGo to choose your companion.`,
+            userId: matchingTrip.userId,
+            type: 'match_found',
+            meta: { matchId, tripId: matchingTrip.id }
+        }));
+    }
+
+    await Promise.all([...notifications, ...emails]);
+};
+
+const notifyCompanionSelected = async (match, actorId) => {
+    const dateLabel = formatDate(match.date);
+    const actorName = actorId === match.user1Id ? match.user1Name : match.user2Name;
+
+    const notifications = [
+        createNotification({
+            userId: match.user1Id,
+            type: 'companion_selected',
+            title: 'Companion selected',
+            message: `You and ${match.user2Name} are now companions for ${match.destination} on ${dateLabel}. Open My Trips to view contact details.`,
+            tripId: match.trip1Id,
+            matchId: match.id,
+            actorId,
+            actorName
+        }),
+        createNotification({
+            userId: match.user2Id,
+            type: 'companion_selected',
+            title: 'Companion selected',
+            message: `You and ${match.user1Name} are now companions for ${match.destination} on ${dateLabel}. Open My Trips to view contact details.`,
+            tripId: match.trip2Id,
+            matchId: match.id,
+            actorId,
+            actorName
+        })
+    ];
+
+    const [user1Email, user2Email] = await Promise.all([
+        match.user1Email || getUserEmail(match.user1Id),
+        match.user2Email || getUserEmail(match.user2Id)
+    ]);
+
+    const emails = [];
+    if (user1Email) {
+        emails.push(queueEmail({
+            to: user1Email,
+            subject: `Companion selected for ${match.destination}`,
+            text: `You're now traveling with ${match.user2Name} to ${match.destination} on ${dateLabel}. Open UniGo to view contact details.`,
+            userId: match.user1Id,
+            type: 'companion_selected',
+            meta: { matchId: match.id, tripId: match.trip1Id }
+        }));
+    }
+    if (user2Email) {
+        emails.push(queueEmail({
+            to: user2Email,
+            subject: `Companion selected for ${match.destination}`,
+            text: `You're now traveling with ${match.user1Name} to ${match.destination} on ${dateLabel}. Open UniGo to view contact details.`,
+            userId: match.user2Id,
+            type: 'companion_selected',
+            meta: { matchId: match.id, tripId: match.trip2Id }
+        }));
+    }
+
+    await Promise.all([...notifications, ...emails]);
+};
+
 /**
  * Create a match record in the database
  */
@@ -76,11 +240,14 @@ export const createMatch = async (trip1, trip2) => {
             user2Id: trip2.userId,
             user1Name: trip1.userDisplayName,
             user2Name: trip2.userDisplayName,
+            user1Email: trip1.userEmail || null,
+            user2Email: trip2.userEmail || null,
             destination: trip1.destination,
             startPoint: trip1.startPoint,
             date: trip1.date,
             matchedAt: serverTimestamp(),
             notified: false,
+            status: 'pending',
         };
 
         const matchRef = await addDoc(collection(db, 'matches'), match);
@@ -169,11 +336,23 @@ export const processNewTripMatches = async (newTrip) => {
         const { matches } = await findMatches(newTrip);
 
         // Create match records for each match found
-        const matchPromises = matches.map(matchingTrip =>
-            createMatch(newTrip, matchingTrip)
-        );
+        const results = [];
+        for (const matchingTrip of matches) {
+            const matchResult = await createMatch(newTrip, matchingTrip);
+            results.push(matchResult);
 
-        const results = await Promise.all(matchPromises);
+            if (matchResult?.matchId) {
+                try {
+                    await notifyMatchFound({
+                        matchId: matchResult.matchId,
+                        newTrip,
+                        matchingTrip
+                    });
+                } catch (error) {
+                    console.error('Error sending match notifications:', error);
+                }
+            }
+        }
 
         return {
             success: true,
@@ -259,11 +438,28 @@ export const getMatchDetailsForTrip = async (tripId, userId) => {
 export const confirmMatch = async (matchId, userId) => {
     try {
         const matchRef = doc(db, 'matches', matchId);
+        const matchSnap = await getDoc(matchRef);
+
+        if (!matchSnap.exists()) {
+            return { success: false, error: 'Match not found' };
+        }
+
+        const match = { id: matchSnap.id, ...matchSnap.data() };
+
+        if (match.status === 'confirmed') {
+            return { success: true, alreadyConfirmed: true };
+        }
         await updateDoc(matchRef, {
             status: 'confirmed',
             confirmedBy: userId,
             confirmedAt: serverTimestamp()
         });
+
+        try {
+            await notifyCompanionSelected(match, userId);
+        } catch (error) {
+            console.error('Error sending companion notifications:', error);
+        }
         return { success: true };
     } catch (error) {
         console.error('Error confirming match:', error);
