@@ -13,6 +13,7 @@ import GoogleEarthGlobe from './components/globe/LeafletGlobe';
 import FindCompanion from './components/FindCompanion';
 import MyTrip from './components/MyTrip';
 import LoadingButton from './components/ui/LoadingButton';
+import ConfirmationModal from './components/ui/ConfirmationModal';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -56,6 +57,10 @@ export default function TravelCompanionFinder() {
 
   // Loading states for buttons
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Confirmation modal state
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationData, setConfirmationData] = useState({ title: '', message: '', matchCount: 0 });
 
   // Toast notifications
   const { toasts, addToast, removeToast } = useToast();
@@ -308,12 +313,21 @@ export default function TravelCompanionFinder() {
             userEmail: currentUser.email || '',
           });
 
-          // Show success message with toast
+          // Show confirmation modal instead of just a toast
           if (matchResult.matchCount > 0) {
-            addToast(`🎉 Trip registered! Found ${matchResult.matchCount} travel companion(s)!`, 'success', 5000);
+            setConfirmationData({
+              title: '🎉 Trip Registered Successfully!',
+              message: `Your journey to ${formData.destination} has been registered. We found ${matchResult.matchCount} potential travel companion${matchResult.matchCount > 1 ? 's' : ''}!`,
+              matchCount: matchResult.matchCount
+            });
           } else {
-            addToast('✅ Trip registered! We\'ll notify you when we find a match.', 'success', 5000);
+            setConfirmationData({
+              title: '✅ Trip Registered Successfully!',
+              message: `Your journey to ${formData.destination} has been registered. We're actively searching for compatible travel companions.`,
+              matchCount: 0
+            });
           }
+          setShowConfirmationModal(true);
 
           // Save contact and destination for future autofill
           localStorage.setItem('savedContact', formData.contact);
@@ -919,6 +933,15 @@ export default function TravelCompanionFinder() {
           onClose={() => setShowProfileModal(false)}
         />
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        title={confirmationData.title}
+        message={confirmationData.message}
+        matchCount={confirmationData.matchCount}
+      />
     </WavyBackground>
   );
 }
