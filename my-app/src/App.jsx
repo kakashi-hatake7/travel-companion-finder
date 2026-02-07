@@ -17,6 +17,7 @@ import ConfirmationModal from './components/ui/ConfirmationModal';
 import FormInput from './components/ui/FormInput';
 import EmptyState from './components/ui/EmptyState';
 import GenderPreference from './components/ui/GenderPreference';
+import GroupModeToggle from './components/ui/GroupModeToggle';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -36,7 +37,9 @@ export default function TravelCompanionFinder() {
     date: '',
     time: '',
     contact: '',
-    genderPreference: 'any'
+    genderPreference: 'any',
+    isGroupTrip: false,
+    totalSeats: 4
   });
   const [searchFilters, setSearchFilters] = useState({
     destination: '',
@@ -399,7 +402,7 @@ export default function TravelCompanionFinder() {
         const result = await updateTrip(editingTripId, formData);
         if (result.success) {
           addToast('✅ Trip updated successfully!', 'success', 4000);
-          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: 'any' });
+          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: 'any', isGroupTrip: false, totalSeats: 4 });
           setSearchTerm('');
           setEditingTripId(null);
           setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: '' });
@@ -453,7 +456,7 @@ export default function TravelCompanionFinder() {
           localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
 
           // Reset form
-          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: 'any' });
+          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: 'any', isGroupTrip: false, totalSeats: 4 });
           setSearchTerm('');
           setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: '' });
           setTouchedFields({});
@@ -905,6 +908,14 @@ export default function TravelCompanionFinder() {
                   required
                 />
 
+                {/* Group Mode Toggle */}
+                <GroupModeToggle
+                  isGroupTrip={formData.isGroupTrip}
+                  totalSeats={formData.totalSeats}
+                  onToggle={(value) => setFormData({ ...formData, isGroupTrip: value })}
+                  onSeatsChange={(value) => setFormData({ ...formData, totalSeats: value })}
+                />
+
                 <LoadingButton
                   className="submit-btn"
                   onClick={handleSubmit}
@@ -931,7 +942,9 @@ export default function TravelCompanionFinder() {
                 date: trip.date,
                 time: trip.time,
                 contact: trip.contact,
-                genderPreference: trip.genderPreference || 'any'
+                genderPreference: trip.genderPreference || 'any',
+                isGroupTrip: trip.isGroupTrip || false,
+                totalSeats: trip.totalSeats || 4
               });
               setSearchTerm(trip.destination);
               setEditingTripId(trip.id);
@@ -947,6 +960,8 @@ export default function TravelCompanionFinder() {
             trips={trips}
             destinations={destinations}
             startPoints={startPoints}
+            currentUser={currentUser}
+            addToast={addToast}
             onRegisterTrip={(destination) => {
               if (destination) {
                 setFormData({ ...formData, destination });

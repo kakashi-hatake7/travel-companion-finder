@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { MapPin, Calendar, Navigation, Search, Plus, Phone, Clock, Train, Plane, Bus, User } from 'lucide-react';
+import { MapPin, Calendar, Navigation, Search, Plus, Phone, Clock, Train, Plane, Bus, User, Users } from 'lucide-react';
 import EmptyState from './ui/EmptyState';
+import './ui/GroupTrip.css';
+import { joinGroup } from '../services/tripService';
 
-export default function FindCompanion({ trips, destinations, startPoints, onRegisterTrip, setView }) {
+export default function FindCompanion({ trips, destinations, startPoints, onRegisterTrip, setView, currentUser, addToast }) {
     const [filters, setFilters] = useState({
         destination: '',
         startPoint: '',
@@ -58,6 +60,27 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
             return <Plane size={18} />;
         } else {
             return <Bus size={18} />;
+        }
+    };
+
+    // Handle joining a group trip
+    const handleJoinGroup = async (tripId) => {
+        if (!currentUser) {
+            addToast('⚠️ Please sign in to join a group trip', 'warning', 4000);
+            return;
+        }
+
+        try {
+            const result = await joinGroup(tripId, currentUser.uid, currentUser.displayName || 'Anonymous');
+
+            if (result.success) {
+                addToast('✅ Successfully joined the group!', 'success', 4000);
+            } else {
+                addToast(`❌ ${result.error}`, 'error', 4000);
+            }
+        } catch (error) {
+            console.error('Error joining group:', error);
+            addToast('❌ Failed to join group. Please try again.', 'error', 4000);
         }
     };
 
@@ -199,7 +222,16 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
                         />
                     ) : (
                         filteredTrips.map((trip) => (
-                            <div key={trip.id} className="companion-card glass-card">
+                            <div key={trip.id} className="companion-card glass-card" style={{ position: 'relative' }}>
+                                {/* Seat Indicator Badge for Group Trips */}
+                                {trip.isGroupTrip && (
+                                    <div className="seat-indicator">
+                                        <span className={trip.availableSeats > 0 ? 'seats-available' : 'seats-full'}>
+                                            {trip.availableSeats > 0 ? '🟢' : '🔴'} {trip.availableSeats}/{trip.totalSeats} Seats
+                                        </span>
+                                    </div>
+                                )}
+
                                 <div className="companion-card-header">
                                     <div className="companion-route">
                                         {getTransportIcon(trip.startPoint)}
@@ -230,13 +262,41 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
 
                                     <div className="companion-footer">
                                         <div className="companion-user">
-                                            <User size={14} />
-                                            <span>Traveler</span>
+                                            {trip.isGroupTrip ? <Users size={14} /> : <User size={14} />}
+                                            <span>{trip.isGroupTrip ? 'Group Trip' : 'Traveler'}</span>
                                         </div>
-                                        <a href={`tel:${trip.contact}`} className="companion-contact-btn">
-                                            <Phone size={14} />
-                                            Contact
-                                        </a>
+
+                                        {/* Seat Dots for Group Trips */}
+                                        {trip.isGroupTrip && (
+                                            <div className="seat-dots">
+                                                {Array.from({ length: trip.totalSeats }).map((_, i) => (
+                                                    <span key={i} className={i < (trip.members?.length || 1) ? 'seat-filled' : 'seat-empty'}>
+                                                        {i < (trip.members?.length || 1) ? '●' : '○'}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Join Group Button or Contact Link */}
+                                        {trip.isGroupTrip ? (
+                                            <button
+                                                className={`companion-contact-btn ${trip.availableSeats <= 0 || trip.members?.includes(currentUser?.uid) ? 'disabled' : ''}`}
+                                                onClick={() => handleJoinGroup(trip.id)}
+                                                disabled={trip.availableSeats <= 0 || trip.members?.includes(currentUser?.uid)}
+                                            >
+                                                <Users size={14} />
+                                                {trip.members?.includes(currentUser?.uid)
+                                                    ? 'Already Joined'
+                                                    : trip.availableSeats > 0
+                                                        ? 'Join Group'
+                                                        : 'Group Full'}
+                                            </button>
+                                        ) : (
+                                            <a href={`tel:${trip.contact}`} className="companion-contact-btn">
+                                                <Phone size={14} />
+                                                Contact
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </div>

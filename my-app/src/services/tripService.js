@@ -41,6 +41,10 @@ export const createTrip = async (tripData, userId, userDisplayName, userEmail) =
             time: tripData.time,
             contact: tripData.contact || '',
             genderPreference: tripData.genderPreference || 'any',
+            isGroupTrip: tripData.isGroupTrip || false,
+            totalSeats: tripData.isGroupTrip ? (tripData.totalSeats || 4) : 1,
+            members: [userId],
+            availableSeats: tripData.isGroupTrip ? ((tripData.totalSeats || 4) - 1) : 0,
             status: 'active',
             createdAt: serverTimestamp(),
             expiresAt: Timestamp.fromDate(expiresAt),
@@ -173,6 +177,8 @@ export const updateTrip = async (tripId, updatedData) => {
             time: updatedData.time,
             contact: updatedData.contact || '',
             genderPreference: updatedData.genderPreference || 'any',
+            isGroupTrip: updatedData.isGroupTrip || false,
+            totalSeats: updatedData.isGroupTrip ? (updatedData.totalSeats || 4) : 1,
             expiresAt: Timestamp.fromDate(expiresAt),
         });
 
@@ -270,6 +276,49 @@ export const cleanupExpiredTrips = async () => {
         return { success: true, count: deletePromises.length };
     } catch (error) {
         console.error('Error cleaning up expired trips:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Join a group trip
+ */
+export const joinGroup = async (tripId, userId, userDisplayName) => {
+    try {
+        const tripRef = doc(db, 'trips', tripId);
+        const tripSnap = await getDoc(tripRef);
+
+        if (!tripSnap.exists()) {
+            return { success: false, error: 'Trip not found' };
+        }
+
+        const trip = tripSnap.data();
+
+        // Check if it's a group trip
+        if (!trip.isGroupTrip) {
+            return { success: false, error: 'This is not a group trip' };
+        }
+
+        // Check if user already joined
+        if (trip.members && trip.members.includes(userId)) {
+            return { success: false, error: 'You have already joined this group' };
+        }
+
+        // Check if seats available
+        if (trip.availableSeats <= 0) {
+            return { success: false, error: 'Group is full' };
+        }
+
+        // Add user to members
+        const updatedMembers = [...(trip.members || []), userId];
+        await updateDoc(tripRef, {
+            members: updatedMembers,
+            availableSeats: trip.availableSeats - 1
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error joining group:', error);
         return { success: false, error: error.message };
     }
 };
