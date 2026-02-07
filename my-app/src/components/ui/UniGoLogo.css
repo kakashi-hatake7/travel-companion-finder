@@ -1,150 +1,149 @@
-/* UniGo Logo Styles */
+/* UniGo Logo Styles - Airbnb-Inspired Layout */
 
 .unigo-logo-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    /* Horizontal layout like Airbnb */
     align-items: center;
-    gap: 8px;
-    transition: transform 0.3s ease;
+    gap: var(--spacing-3);
+    transition: transform var(--transition-base);
 }
 
 .unigo-logo-container:hover {
     transform: scale(1.02);
 }
 
-.unigo-suitcase-wrapper {
+.unigo-icon-wrapper {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    /* Prevent icon from shrinking */
 }
 
-/* Purple Glow Effect */
-.unigo-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    height: 90%;
-    background: radial-gradient(ellipse at center,
-            rgba(75, 100, 255, 0.4) 0%,
-            rgba(120, 80, 255, 0.2) 40%,
-            transparent 70%);
-    filter: blur(15px);
-    border-radius: 12px;
-    z-index: -1;
-    transition: all 0.4s ease;
-}
-
-.unigo-logo-container.hovered .unigo-glow {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center,
-            rgba(75, 100, 255, 0.5) 0%,
-            rgba(120, 80, 255, 0.3) 40%,
-            transparent 70%);
-    filter: blur(20px);
-}
-
-/* SVG Animations */
-.unigo-suitcase-svg {
+/* SVG Logo Styling */
+.unigo-logo-svg {
     position: relative;
     z-index: 1;
-    filter: drop-shadow(0 0 8px rgba(100, 140, 255, 0.4));
-    transition: filter 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(255, 56, 92, 0.15));
+    transition: filter var(--transition-base);
 }
 
-.unigo-logo-container.hovered .unigo-suitcase-svg {
-    filter: drop-shadow(0 0 15px rgba(100, 140, 255, 0.6));
+.unigo-logo-container.hovered .unigo-logo-svg {
+    filter: drop-shadow(0 4px 16px rgba(255, 56, 92, 0.25));
 }
 
-/* Handle Animation */
-.unigo-handle rect {
-    transition: y 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Icon Elements - Smooth Transitions */
+.icon-body,
+.icon-handle {
+    transition: all var(--transition-base);
 }
 
-/* Suitcase Body */
-.suitcase-body {
-    transition: stroke-width 0.3s ease;
+.unigo-logo-container.hovered .icon-body {
+    stroke-width: 6;
 }
 
-.unigo-logo-container.hovered .suitcase-body {
-    stroke-width: 3.5;
+.unigo-logo-container.hovered .icon-handle {
+    stroke-width: 6;
 }
 
-/* Eyes Animation */
-.eye-left,
-.eye-right {
-    transition: all 0.2s ease;
+/* Eyes - Blink Animation */
+.eye-open {
+    transition: all var(--transition-fast);
 }
 
-.eye-wink {
-    animation: winkPulse 0.3s ease;
+.eye-blink {
+    animation: blinkAnimation 0.2s ease-in-out;
 }
 
-@keyframes winkPulse {
+@keyframes blinkAnimation {
     0% {
         opacity: 0;
-        transform: scaleX(0);
+        stroke-width: 2;
     }
 
     50% {
         opacity: 1;
-        transform: scaleX(1.2);
+        stroke-width: 5;
     }
 
     100% {
         opacity: 1;
-        transform: scaleX(1);
+        stroke-width: 4;
     }
 }
 
 /* Smile Animation */
-.unigo-smile {
-    transition: d 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), stroke-width 0.3s ease;
+.icon-smile {
+    transition: d 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), stroke-width var(--transition-base);
 }
 
-.unigo-logo-container.hovered .unigo-smile {
+.unigo-logo-container.hovered .icon-smile {
     stroke-width: 5;
 }
 
-/* Text Styling */
-.unigo-text-container {
-    text-align: center;
-}
-
+/* Text Styling - Airbnb Typography */
 .unigo-brand-text {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg, #6b8cff 0%, #9b7bff 50%, #6b8cff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 30px rgba(100, 140, 255, 0.3);
-    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #FF385C;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    line-height: 1;
 }
 
+/* Hover effect - slightly darker */
 .unigo-logo-container.hovered .unigo-brand-text {
-    letter-spacing: 2px;
-    text-shadow: 0 0 40px rgba(100, 140, 255, 0.5);
+    color: #E31C5F;
 }
 
-/* Small Header Version */
-.unigo-logo-container.header-logo {
-    flex-direction: row;
-    gap: 10px;
-}
-
-.unigo-logo-container.header-logo .unigo-brand-text {
-    font-size: 24px;
-}
-
-/* Responsive */
+/* Responsive Design */
 @media (max-width: 768px) {
+    .unigo-brand-text {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
     .unigo-brand-text {
         font-size: 18px;
     }
+
+    .unigo-logo-container {
+        gap: var(--spacing-2);
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .unigo-logo-container,
+    .unigo-logo-svg,
+    .icon-body,
+    .icon-handle,
+    .icon-smile,
+    .unigo-brand-text {
+        transition: none;
+    }
+
+    .eye-blink {
+        animation: none;
+    }
+}
+
+/* Professional Polish */
+.unigo-logo-container {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+/* Focus state for accessibility */
+.unigo-logo-container:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-md);
 }

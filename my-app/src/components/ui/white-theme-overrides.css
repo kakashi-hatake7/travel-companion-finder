@@ -1,0 +1,431 @@
+/* Industry-Level White Theme Overrides */
+/* Uses new design system variables for consistency */
+
+/* Body & Root - Clean White Background */
+body {
+    background: var(--color-bg-primary) !important;
+}
+
+html,
+#root,
+.app-wrapper,
+.app-container {
+    background: var(--color-bg-primary) !important;
+    background-image: none !important;
+}
+
+/* Header - Professional Glassmorphism */
+.header {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.header-scrolled {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Feature Cards - Airbnb Quality */
+.feature-card-inner {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.feature-card-container:hover .feature-card-inner {
+    border-color: var(--color-border) !important;
+    box-shadow: var(--shadow-card-hover) !important;
+}
+
+.feature-card-inner h3 {
+    color: var(--color-neutral-900) !important;
+    font-size: var(--font-h3) !important;
+    font-weight: var(--font-weight-semibold) !important;
+}
+
+.feature-card-inner p {
+    color: var(--color-neutral-700) !important;
+    font-size: var(--font-body) !important;
+}
+
+/* Form Labels - Industry Standard */
+.form-group label {
+    color: var(--color-neutral-900) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    font-size: var(--font-small) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.01em !important;
+}
+
+/* Form Inputs - 56px Height Standard */
+.form-group input,
+.form-group select,
+.search-input-container input {
+    min-height: 56px !important;
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-neutral-900) !important;
+    font-size: var(--font-body-lg) !important;
+    font-weight: var(--font-weight-normal) !important;
+    padding: var(--spacing-4) !important;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.search-input-container input:hover {
+    border-color: var(--color-border-dark) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.search-input-container input:focus {
+    border-color: var(--color-neutral-900) !important;
+    box-shadow: 0 0 0 2px rgba(34, 34, 34, 0.1) !important;
+}
+
+.form-group input::placeholder,
+.search-input-container input::placeholder {
+    color: var(--color-text-tertiary) !important;
+}
+
+/* Select Dropdown - Updated Arrow */
+.form-group select {
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23717171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e') !important;
+    background-repeat: no-repeat !important;
+    background-position: right var(--spacing-4) center !important;
+    padding-right: var(--spacing-10) !important;
+}
+
+/* Dropdown Menu - Clean & Professional */
+.dropdown-menu {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.dropdown-item {
+    color: var(--color-neutral-900) !important;
+    border-bottom: 1px solid var(--color-neutral-300) !important;
+}
+
+.dropdown-item:hover {
+    background: var(--color-surface-hover) !important;
+    color: var(--color-primary) !important;
+}
+
+.dropdown-item svg {
+    color: var(--color-primary) !important;
+}
+
+/* Quick Chips - Modern Style */
+.quick-chip {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-neutral-800) !important;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-full);
+    font-size: var(--font-body);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.quick-chip:hover {
+    background: var(--color-surface-hover) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+}
+
+.quick-chip.active {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-text-inverse) !important;
+}
+
+/* Quick Label */
+.quick-label {
+    color: var(--color-neutral-700) !important;
+    font-size: var(--font-small);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Helper & Validation Text */
+.helper-text {
+    color: var(--color-neutral-700) !important;
+    font-size: var(--font-small) !important;
+}
+
+.error-text {
+    color: var(--color-error) !important;
+    font-size: var(--font-small) !important;
+}
+
+.success-text {
+    color: var(--color-success) !important;
+    font-size: var(--font-small) !important;
+}
+
+/* Stats Section */
+.stats-grid {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.stat-label {
+    color: var(--color-neutral-700) !important;
+    font-size: var(--font-small) !important;
+}
+
+.stat-number {
+    font-size: var(--font-display) !important;
+    font-weight: var(--font-weight-bold) !important;
+}
+
+/* Icon Colors */
+.input-icon {
+    color: var(--color-text-tertiary) !important;
+}
+
+.search-input-container input:focus~.input-icon {
+    color: var(--color-primary) !important;
+}
+
+/* Cards - Professional Style */
+.glass-card {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.glass-card:hover {
+    border-color: var(--color-border) !important;
+    box-shadow: var(--shadow-card-hover) !important;
+}
+
+/* Time & Date Preset Buttons */
+.time-preset-btn,
+.quick-date-btn,
+.date-quick-btn {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-neutral-800) !important;
+    min-height: 48px !important;
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: var(--font-weight-medium) !important;
+}
+
+.time-preset-btn:hover,
+.quick-date-btn:hover,
+.date-quick-btn:hover {
+    background: var(--color-surface-hover) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+}
+
+.time-preset-btn.active,
+.quick-date-btn.active,
+.date-quick-btn.active {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-text-inverse) !important;
+}
+
+/* Form Container */
+.form-container {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+/* Hero Badge */
+.hero-badge {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    color: var(--color-neutral-700) !important;
+}
+
+/* Notification Button */
+.notification-btn {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    color: var(--color-neutral-700) !important;
+}
+
+.notification-btn:hover {
+    background: var(--color-surface-hover) !important;
+    border-color: var(--color-border) !important;
+    color: var(--color-neutral-900) !important;
+}
+
+/* User Profile Button */
+.user-profile-btn {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    color: var(--color-neutral-800) !important;
+}
+
+.user-profile-btn:hover {
+    background: var(--color-surface-hover) !important;
+    border-color: var(--color-border) !important;
+}
+
+.user-avatar {
+    background: var(--color-primary) !important;
+    color: var(--color-text-inverse) !important;
+}
+
+/* User Dropdown Menu */
+.user-dropdown-menu {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-light) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.user-dropdown-item {
+    color: var(--color-neutral-800) !important;
+}
+
+.user-dropdown-item:hover {
+    background: var(--color-surface-hover) !important;
+    color: var(--color-primary) !important;
+}
+
+.user-dropdown-item.logout:hover {
+    background: rgba(193, 53, 21, 0.1) !important;
+    color: var(--color-error) !important;
+}
+
+/* Login Button */
+.login-btn {
+    background: var(--color-accent-gradient) !important;
+    color: var(--color-text-inverse) !important;
+    border: none !important;
+}
+
+.login-btn:hover {
+    transform: scale(1.02) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* Nav Links */
+.nav-link {
+    color: var(--color-neutral-700) !important;
+}
+
+.nav-link:hover {
+    color: var(--color-neutral-900) !important;
+    background: var(--color-surface-hover) !important;
+}
+
+.nav-link.active {
+    color: var(--color-primary) !important;
+    background: rgba(255, 56, 92, 0.1) !important;
+}
+
+/* Hero Text */
+.hero-title {
+    color: var(--color-neutral-900) !important;
+    font-size: var(--font-display) !important;
+    font-weight: var(--font-weight-bold) !important;
+}
+
+.hero-subtitle {
+    color: var(--color-neutral-700) !important;
+    font-size: var(--font-h4) !important;
+}
+
+.hero-tagline {
+    color: var(--color-primary) !important;
+    font-size: var(--font-h3) !important;
+    font-weight: var(--font-weight-semibold) !important;
+}
+
+/* Remove Background Toggle Button */
+.bg-toggle-btn {
+    display: none !important;
+}
+
+/* Feature Icons - Lighter for White Theme */
+.destination-icon {
+    background: rgba(255, 56, 92, 0.1) !important;
+    color: var(--color-primary) !important;
+    box-shadow: 0 2px 8px rgba(255, 56, 92, 0.15) !important;
+}
+
+.time-icon {
+    background: rgba(168, 85, 247, 0.1) !important;
+    color: #a855f7 !important;
+    box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15) !important;
+}
+
+.connect-icon {
+    background: rgba(0, 166, 153, 0.1) !important;
+    color: var(--color-success) !important;
+    box-shadow: 0 2px 8px rgba(0, 166, 153, 0.15) !important;
+}
+
+/* Validation States */
+.form-group.success input,
+.form-group.success select,
+.form-group.success .search-input-container input {
+    border-color: var(--color-success) !important;
+    background: rgba(0, 166, 153, 0.05) !important;
+}
+
+.form-group.error input,
+.form-group.error select,
+.form-group.error .search-input-container input {
+    border-color: var(--color-error) !important;
+    background: rgba(193, 53, 21, 0.05) !important;
+}
+
+.form-group.success .validation-icon {
+    color: var(--color-success) !important;
+}
+
+.form-group.error .validation-icon {
+    color: var(--color-error) !important;
+}
+
+/* Remove All Glow Effects */
+.glow,
+[class*="glow"],
+[class*="vignette"] {
+    box-shadow: none !important;
+    background-image: none !important;
+    filter: none !important;
+}
+
+/* Remove Pseudo-element Glows */
+*::before,
+*::after {
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* Clean Backgrounds */
+html::before,
+html::after,
+body::before,
+body::after,
+#root::before,
+#root::after,
+.app-wrapper::before,
+.app-wrapper::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Main Content Areas */
+.main-content,
+.home-view,
+.hero-section {
+    background: transparent !important;
+    background-image: none !important;
+}

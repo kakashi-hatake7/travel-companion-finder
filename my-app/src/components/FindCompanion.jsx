@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { MapPin, Calendar, Navigation, Search, Plus, Phone, Clock, Train, Plane, Bus, User, Users } from 'lucide-react';
 import EmptyState from './ui/EmptyState';
+import TripCard from './ui/TripCard';
 import './ui/GroupTrip.css';
 import { joinGroup } from '../services/tripService';
 
@@ -211,95 +212,26 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
                     <span className="companion-count">{filteredTrips.length} found</span>
                 </div>
 
-                <div className="companion-list">
+                <div className="companion-list modern-grid">
                     {filteredTrips.length === 0 ? (
-                        <EmptyState
-                            icon={<User size={64} />}
-                            title="No trips found for this route"
-                            description="Be the first to register a trip on this route and connect with fellow travelers!"
-                            actionText="Register Trip"
-                            onAction={() => setView ? setView('register') : onRegisterTrip('')}
-                        />
+                        <div className="empty-state-wrapper">
+                            <EmptyState
+                                icon={<User size={64} />}
+                                title="No trips found for this route"
+                                description="Be the first to register a trip on this route and connect with fellow travelers!"
+                                actionText="Register Trip"
+                                onAction={() => setView ? setView('register') : onRegisterTrip('')}
+                            />
+                        </div>
                     ) : (
                         filteredTrips.map((trip) => (
-                            <div key={trip.id} className="companion-card glass-card" style={{ position: 'relative' }}>
-                                {/* Seat Indicator Badge for Group Trips */}
-                                {trip.isGroupTrip && (
-                                    <div className="seat-indicator">
-                                        <span className={trip.availableSeats > 0 ? 'seats-available' : 'seats-full'}>
-                                            {trip.availableSeats > 0 ? '🟢' : '🔴'} {trip.availableSeats}/{trip.totalSeats} Seats
-                                        </span>
-                                    </div>
-                                )}
-
-                                <div className="companion-card-header">
-                                    <div className="companion-route">
-                                        {getTransportIcon(trip.startPoint)}
-                                        <span className="route-text">
-                                            {trip.startPoint?.split(' ')[0]} → {trip.destination}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="companion-card-body">
-                                    <div className="companion-info">
-                                        <div className="info-item">
-                                            <Calendar size={14} />
-                                            <span>{new Date(trip.date).toLocaleDateString('en-US', {
-                                                month: 'short',
-                                                day: 'numeric'
-                                            })}</span>
-                                        </div>
-                                        <div className="info-item">
-                                            <Clock size={14} />
-                                            <span>{trip.time}</span>
-                                        </div>
-                                        <div className="info-item">
-                                            <Navigation size={14} />
-                                            <span>{trip.startPoint}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="companion-footer">
-                                        <div className="companion-user">
-                                            {trip.isGroupTrip ? <Users size={14} /> : <User size={14} />}
-                                            <span>{trip.isGroupTrip ? 'Group Trip' : 'Traveler'}</span>
-                                        </div>
-
-                                        {/* Seat Dots for Group Trips */}
-                                        {trip.isGroupTrip && (
-                                            <div className="seat-dots">
-                                                {Array.from({ length: trip.totalSeats }).map((_, i) => (
-                                                    <span key={i} className={i < (trip.members?.length || 1) ? 'seat-filled' : 'seat-empty'}>
-                                                        {i < (trip.members?.length || 1) ? '●' : '○'}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {/* Join Group Button or Contact Link */}
-                                        {trip.isGroupTrip ? (
-                                            <button
-                                                className={`companion-contact-btn ${trip.availableSeats <= 0 || trip.members?.includes(currentUser?.uid) ? 'disabled' : ''}`}
-                                                onClick={() => handleJoinGroup(trip.id)}
-                                                disabled={trip.availableSeats <= 0 || trip.members?.includes(currentUser?.uid)}
-                                            >
-                                                <Users size={14} />
-                                                {trip.members?.includes(currentUser?.uid)
-                                                    ? 'Already Joined'
-                                                    : trip.availableSeats > 0
-                                                        ? 'Join Group'
-                                                        : 'Group Full'}
-                                            </button>
-                                        ) : (
-                                            <a href={`tel:${trip.contact}`} className="companion-contact-btn">
-                                                <Phone size={14} />
-                                                Contact
-                                            </a>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
+                            <TripCard
+                                key={trip.id}
+                                trip={trip}
+                                onJoinGroup={handleJoinGroup}
+                                currentUser={currentUser}
+                                isGroupTrip={trip.isGroupTrip}
+                            />
                         ))
                     )}
                 </div>

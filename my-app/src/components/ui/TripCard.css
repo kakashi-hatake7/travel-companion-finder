@@ -1,0 +1,269 @@
+/* Import Modern Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Trip Card Container */
+.trip-card {
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.trip-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    border-color: #e5e7eb;
+}
+
+/* A. Image Header */
+.trip-card-image-container {
+    position: relative;
+    width: 100%;
+    height: 16rem;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.trip-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.trip-card:hover .trip-card-image {
+    transform: scale(1.05);
+}
+
+/* Glassmorphism Floating Badge */
+.trip-card-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    z-index: 10;
+}
+
+.badge-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.badge-dot-green {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.badge-dot-red {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.badge-text {
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* B. Card Body */
+.trip-card-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Title */
+.trip-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.4;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+/* Info Row */
+.trip-card-info-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.trip-card-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.info-icon {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+/* THE SQUAD - Avatar Stack */
+.trip-card-squad {
+    margin-top: 0.5rem;
+}
+
+.squad-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+}
+
+.squad-avatars {
+    display: flex;
+    align-items: center;
+}
+
+.squad-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: -0.75rem;
+    transition: transform 0.2s ease, z-index 0.2s ease;
+    position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.squad-avatar:first-child {
+    margin-left: 0;
+}
+
+.squad-avatar:hover {
+    transform: translateY(-4px) scale(1.1);
+    z-index: 10;
+}
+
+.squad-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.squad-avatar-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Solo Trip User Info */
+.trip-card-solo-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.75rem 0;
+}
+
+/* C. Footer - Action Button */
+.trip-card-footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.trip-card-action-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    letter-spacing: 0.01em;
+}
+
+.trip-card-action-btn:hover:not(.disabled) {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.trip-card-action-btn:active:not(.disabled) {
+    transform: translateY(0);
+}
+
+.trip-card-action-btn.disabled {
+    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .trip-card-image-container {
+        height: 12rem;
+    }
+
+    .trip-card-title {
+        font-size: 1.125rem;
+    }
+
+    .trip-card-body {
+        padding: 1.25rem;
+    }
+
+    .trip-card-footer {
+        padding: 0 1.25rem 1.25rem 1.25rem;
+    }
+
+    .squad-avatar {
+        width: 2rem;
+        height: 2rem;
+        border-width: 2px;
+    }
+}

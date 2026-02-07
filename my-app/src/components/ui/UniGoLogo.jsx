@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './UniGoLogo.css';
 
-const UniGoLogo = ({ size = 60, showText = true, onClick }) => {
+const UniGoLogo = ({ size = 48, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isBlinking, setIsBlinking] = useState(false);
 
-  // Scale factor based on size
-  const scale = size / 60;
+  // Auto-blink animation every 3 seconds
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setIsBlinking(true);
+      setTimeout(() => setIsBlinking(false), 200);
+    }, 3000);
+
+    return () => clearInterval(blinkInterval);
+  }, []);
 
   return (
     <div
@@ -15,123 +23,95 @@ const UniGoLogo = ({ size = 60, showText = true, onClick }) => {
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
-      <div className="unigo-suitcase-wrapper" style={{ width: size * 1.2, height: size * 1.5 }}>
-        {/* Purple Glow Effect */}
-        <div className="unigo-glow"></div>
-
-        {/* SVG Suitcase */}
+      {/* Icon - Larger suitcase with taller body (rectangle) */}
+      <div className="unigo-icon-wrapper" style={{ width: size, height: size * 1.4 }}>
         <svg
-          viewBox="0 0 80 100"
-          className="unigo-suitcase-svg"
+          viewBox="0 0 100 140"
+          className="unigo-logo-svg"
           style={{ width: '100%', height: '100%' }}
         >
-          {/* Handle - animates up on hover */}
-          <g className="unigo-handle">
+          {/* Main Suitcase Icon - Taller rectangular body */}
+          <g className="unigo-main-icon">
+            {/* Suitcase Body - Much taller rectangle */}
             <rect
-              x="30"
-              y={isHovered ? "-5" : "5"}
-              width="20"
-              height="12"
-              rx="3"
-              fill="transparent"
-              stroke="url(#handleGradient)"
-              strokeWidth="3"
-              className="handle-rect"
+              x="15"
+              y="35"
+              width="70"
+              height="95"
+              rx="12"
+              fill="none"
+              stroke="url(#primaryGradient)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon-body"
+            />
+
+            {/* Handle - clean curved line */}
+            <path
+              d="M 35 35 L 35 22 Q 35 15 42 15 L 58 15 Q 65 15 65 22 L 65 35"
+              fill="none"
+              stroke="url(#primaryGradient)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon-handle"
+            />
+
+            {/* Eyes - with blink animation - positioned lower */}
+            <g className="icon-eyes">
+              {/* Left Eye */}
+              {isBlinking || isHovered ? (
+                <line
+                  x1="35" y1="85" x2="42" y2="85"
+                  stroke="url(#primaryGradient)"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  className="eye-blink"
+                />
+              ) : (
+                <circle
+                  cx="38.5" cy="85" r="4"
+                  fill="url(#primaryGradient)"
+                  className="eye-open"
+                />
+              )}
+
+              {/* Right Eye */}
+              <circle
+                cx="61.5" cy="85" r="4"
+                fill="url(#primaryGradient)"
+                className="eye-open"
+              />
+            </g>
+
+            {/* Smile - positioned quite low for cute effect */}
+            <path
+              d={isHovered
+                ? "M 35 105 Q 50 117 65 105"
+                : "M 37 105 Q 50 115 63 105"
+              }
+              fill="none"
+              stroke="url(#primaryGradient)"
+              strokeWidth="4"
+              strokeLinecap="round"
+              className="icon-smile"
             />
           </g>
 
-          {/* Main Suitcase Body */}
-          <rect
-            x="8"
-            y="18"
-            width="64"
-            height="78"
-            rx="8"
-            fill="rgba(10, 10, 20, 0.9)"
-            stroke="url(#suitcaseGradient)"
-            strokeWidth="3"
-            className="suitcase-body"
-          />
-
-          {/* Decorative Lines (zipper effect) */}
-          <line
-            x1="15" y1="50" x2="65" y2="50"
-            stroke="rgba(100, 140, 220, 0.3)"
-            strokeWidth="1.5"
-            strokeDasharray="4,3"
-          />
-          <line
-            x1="15" y1="72" x2="65" y2="72"
-            stroke="rgba(100, 140, 220, 0.3)"
-            strokeWidth="1.5"
-            strokeDasharray="4,3"
-          />
-
-          {/* Eyes */}
-          <g className="unigo-eyes">
-            {/* Left Eye - winks on hover */}
-            {isHovered ? (
-              // Winking eye (line)
-              <line
-                x1="25" y1="36" x2="33" y2="36"
-                stroke="rgba(120, 160, 255, 0.9)"
-                strokeWidth="3"
-                strokeLinecap="round"
-                className="eye-wink"
-              />
-            ) : (
-              // Open eye (rectangle)
-              <rect
-                x="26" y="32" width="6" height="8"
-                fill="rgba(120, 160, 255, 0.9)"
-                rx="1"
-                className="eye-left"
-              />
-            )}
-
-            {/* Right Eye - always open */}
-            <rect
-              x="48" y="32" width="6" height="8"
-              fill="rgba(120, 160, 255, 0.9)"
-              rx="1"
-              className="eye-right"
-            />
-          </g>
-
-          {/* U Smile - transforms to wider smile on hover */}
-          <path
-            d={isHovered
-              ? "M 28 58 Q 40 75 52 58" // Wider smile on hover
-              : "M 30 55 Q 40 70 50 55"  // Normal U shape
-            }
-            fill="transparent"
-            stroke="rgba(120, 160, 255, 0.9)"
-            strokeWidth="4"
-            strokeLinecap="round"
-            className="unigo-smile"
-          />
-
-          {/* Gradient Definitions */}
+          {/* Gradient Definition */}
           <defs>
-            <linearGradient id="suitcaseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4a7dff" />
-              <stop offset="50%" stopColor="#7b5cff" />
-              <stop offset="100%" stopColor="#4a7dff" />
-            </linearGradient>
-            <linearGradient id="handleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#4a7dff" />
-              <stop offset="100%" stopColor="#7b5cff" />
+            <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF385C" />
+              <stop offset="50%" stopColor="#E31C5F" />
+              <stop offset="100%" stopColor="#D70466" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      {/* UniGo Text */}
-      {showText && (
-        <div className="unigo-text-container">
-          <span className="unigo-brand-text">UniGo</span>
-        </div>
-      )}
+      {/* UniGo Text - Airbnb style (lowercase, next to icon) */}
+      <span className="unigo-brand-text">unigo</span>
     </div>
   );
 };

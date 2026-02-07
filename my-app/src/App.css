@@ -2125,6 +2125,35 @@
   gap: var(--spacing-lg);
 }
 
+/* Modern Grid Layout for Trip Cards */
+.companion-list.modern-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+/* Empty state wrapper for grid */
+.empty-state-wrapper {
+  grid-column: 1 / -1;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  .companion-list.modern-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1200px) {
+  .companion-list.modern-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
 /* Empty State */
 .companion-empty-state {
   display: flex;
@@ -4067,5 +4096,549 @@
 
   .feature-card-container:hover {
     transform: none;
+  }
+}
+
+/* ===================================
+   PREMIUM BOOKING DASHBOARD STYLES
+   =================================== */
+
+/* Dashboard Container - Wider Layout */
+.booking-dashboard {
+  width: 100%;
+  max-width: 768px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  text-align: center;
+  padding: 32px 40px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dashboard-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+}
+
+.dashboard-header p {
+  font-size: 15px;
+  color: #717171;
+  margin: 0;
+}
+
+/* Dashboard Body */
+.dashboard-body {
+  padding: 32px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Form Sections with Labels */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #717171;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Location Grid - Side by Side */
+.location-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .location-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Schedule Grid - Two Column */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 640px) {
+  .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Time Presets Grid - Fixed 5 Columns */
+.time-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .time-presets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.time-preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: #f7f7f7;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+}
+
+.time-preset-btn:hover {
+  background: #f0f0f0;
+  border-color: #d1d1d1;
+  transform: translateY(-1px);
+}
+
+.time-preset-btn.active {
+  background: linear-gradient(135deg, #FF385C 0%, #E31C5F 100%);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 56, 92, 0.3);
+}
+
+.time-preset-btn .time-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.time-preset-btn .time-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #717171;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.time-preset-btn.active .time-label {
+  color: white;
+}
+
+/* Custom Time Section */
+.custom-time-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.custom-time-label {
+  font-size: 13px;
+  color: #717171;
+  white-space: nowrap;
+}
+
+.custom-time-input {
+  flex: 1;
+  padding: 10px 14px !important;
+  min-height: 44px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+}
+
+/* ===================================
+   PREFERENCES SECTION (Gray Box)
+   =================================== */
+.preferences-section {
+  background: #f7f7f7;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Preference Row - Horizontal Layout */
+.preference-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Group Mode Toggle Row */
+.group-mode-row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.preference-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preference-info svg {
+  color: #FF385C;
+}
+
+.preference-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preference-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.preference-desc {
+  font-size: 13px;
+  color: #717171;
+}
+
+/* Premium Toggle Switch */
+.toggle-switch-premium {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background: #d1d1d1;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggle-switch-premium.active {
+  background: linear-gradient(135deg, #FF385C 0%, #E31C5F 100%);
+}
+
+.toggle-switch-premium .toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch-premium.active .toggle-slider {
+  transform: translateX(24px);
+}
+
+/* Seats Selection Row */
+.seats-selection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.seats-selection-row label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.seats-selector-compact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+}
+
+.seats-btn-compact {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f7f7;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seats-btn-compact:hover:not(:disabled) {
+  background: #FF385C;
+  color: white;
+}
+
+.seats-btn-compact:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.seats-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Gender Preference Row */
+.gender-preference-row {
+  padding-top: 4px;
+}
+
+.gender-label {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #1a1a1a !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 4px;
+}
+
+/* Gender Segmented Control - Full Width */
+.gender-segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  background: #e5e5e5;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.segment-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #717171;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment-btn:hover {
+  color: #1a1a1a;
+}
+
+.segment-btn.active {
+  background: white;
+  color: #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.segment-btn svg {
+  flex-shrink: 0;
+}
+
+/* Premium Submit Button */
+.submit-btn-premium {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #FF385C 0%, #E31C5F 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(255, 56, 92, 0.3);
+  margin-top: 8px;
+}
+
+.submit-btn-premium:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 24px rgba(255, 56, 92, 0.4);
+}
+
+.submit-btn-premium:active {
+  transform: scale(0.98);
+}
+
+/* Quick Date Buttons Override */
+.schedule-grid .quick-date-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.schedule-grid .quick-date-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #f7f7f7;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #717171;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.schedule-grid .quick-date-btn:hover {
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+
+/* Form Group Override for Dashboard */
+.dashboard-body .form-group {
+  gap: 8px;
+}
+
+.dashboard-body .form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dashboard-body .form-group input,
+.dashboard-body .form-group select {
+  height: 48px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1.5px solid #d1d1d1;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.dashboard-body .form-group input:focus,
+.dashboard-body .form-group select:focus {
+  border-color: #FF385C;
+  box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
+  background: #ffffff;
+}
+
+.dashboard-body .form-group input::placeholder {
+  color: #a0a0a0;
+}
+
+/* Search Input Container Override */
+.dashboard-body .search-input-container input {
+  padding-left: 44px;
+}
+
+/* Quick Chips Override for Dashboard */
+.dashboard-body .quick-chips-section {
+  margin-bottom: 12px;
+}
+
+.dashboard-body .quick-chip {
+  padding: 6px 12px;
+  background: #f7f7f7;
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #717171;
+}
+
+.dashboard-body .quick-chip:hover {
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.dashboard-body .quick-chip.active {
+  background: #FF385C;
+  border-color: transparent;
+  color: white;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .booking-dashboard {
+    margin: 0 16px;
+    border-radius: 16px;
+  }
+
+  .dashboard-header {
+    padding: 24px 24px 20px;
+  }
+
+  .dashboard-header h2 {
+    font-size: 24px;
+  }
+
+  .dashboard-body {
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .preferences-section {
+    padding: 20px;
+  }
+
+  .segment-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .segment-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gender-segmented-control {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .segment-btn {
+    justify-content: flex-start;
+    padding: 12px 16px;
+  }
+
+  .group-mode-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .seats-selection-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }
