@@ -16,6 +16,7 @@ import LoadingButton from './components/ui/LoadingButton';
 import ConfirmationModal from './components/ui/ConfirmationModal';
 import FormInput from './components/ui/FormInput';
 import EmptyState from './components/ui/EmptyState';
+import GenderPreference from './components/ui/GenderPreference';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -34,7 +35,8 @@ export default function TravelCompanionFinder() {
     startPoint: '',
     date: '',
     time: '',
-    contact: ''
+    contact: '',
+    genderPreference: 'any'
   });
   const [searchFilters, setSearchFilters] = useState({
     destination: '',
@@ -74,7 +76,8 @@ export default function TravelCompanionFinder() {
     startPoint: '',
     date: '',
     time: '',
-    contact: ''
+    contact: '',
+    genderPreference: ''
   });
   const [touchedFields, setTouchedFields] = useState({});
 
@@ -322,6 +325,12 @@ export default function TravelCompanionFinder() {
         }
         return '';
 
+      case 'genderPreference':
+        if (!value) {
+          return 'Please select your travel preference';
+        }
+        return '';
+
       default:
         return '';
     }
@@ -333,7 +342,8 @@ export default function TravelCompanionFinder() {
       startPoint: validateField('startPoint', formData.startPoint),
       date: validateField('date', formData.date),
       time: validateField('time', formData.time),
-      contact: validateField('contact', formData.contact)
+      contact: validateField('contact', formData.contact),
+      genderPreference: validateField('genderPreference', formData.genderPreference)
     };
 
     setFormErrors(errors);
@@ -372,7 +382,8 @@ export default function TravelCompanionFinder() {
       startPoint: true,
       date: true,
       time: true,
-      contact: true
+      contact: true,
+      genderPreference: true
     });
 
     // Validate form
@@ -388,10 +399,10 @@ export default function TravelCompanionFinder() {
         const result = await updateTrip(editingTripId, formData);
         if (result.success) {
           addToast('✅ Trip updated successfully!', 'success', 4000);
-          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: 'any' });
           setSearchTerm('');
           setEditingTripId(null);
-          setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: '' });
           setTouchedFields({});
           setView('myTrip');
         } else {
@@ -442,11 +453,11 @@ export default function TravelCompanionFinder() {
           localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
 
           // Reset form
-          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: 'any' });
           setSearchTerm('');
-          setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '', genderPreference: '' });
           setTouchedFields({});
-          setView('home');
+          setView('myTrip');
         } else {
           addToast('❌ Failed to register trip. Please try again.', 'error', 5000);
         }
@@ -886,6 +897,14 @@ export default function TravelCompanionFinder() {
                   )}
                 </div>
 
+                {/* Gender Preference */}
+                <GenderPreference
+                  value={formData.genderPreference}
+                  onChange={(value) => handleFieldChange('genderPreference', value)}
+                  error={touchedFields.genderPreference ? formErrors.genderPreference : ''}
+                  required
+                />
+
                 <LoadingButton
                   className="submit-btn"
                   onClick={handleSubmit}
@@ -911,7 +930,8 @@ export default function TravelCompanionFinder() {
                 startPoint: trip.startPoint,
                 date: trip.date,
                 time: trip.time,
-                contact: trip.contact
+                contact: trip.contact,
+                genderPreference: trip.genderPreference || 'any'
               });
               setSearchTerm(trip.destination);
               setEditingTripId(trip.id);

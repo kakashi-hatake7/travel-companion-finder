@@ -40,6 +40,7 @@ export const createTrip = async (tripData, userId, userDisplayName, userEmail) =
             date: tripData.date,
             time: tripData.time,
             contact: tripData.contact || '',
+            genderPreference: tripData.genderPreference || 'any',
             status: 'active',
             createdAt: serverTimestamp(),
             expiresAt: Timestamp.fromDate(expiresAt),
@@ -171,6 +172,7 @@ export const updateTrip = async (tripId, updatedData) => {
             date: updatedData.date,
             time: updatedData.time,
             contact: updatedData.contact || '',
+            genderPreference: updatedData.genderPreference || 'any',
             expiresAt: Timestamp.fromDate(expiresAt),
         });
 
