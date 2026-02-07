@@ -28,10 +28,10 @@ const Toast = ({ message, type = 'info', duration = 4000, onClose }) => {
     };
 
     return (
-        <div className={`toast toast-${type} ${isExiting ? 'toast-exit' : ''}`}>
+        <div className={`toast toast-${type} ${isExiting ? 'toast-exit' : ''} dark:bg-slate-800 dark:border dark:border-slate-700 dark:text-slate-100 dark:shadow-slate-900/50`}>
             <div className="toast-icon">{icons[type]}</div>
             <span className="toast-message">{message}</span>
-            <button className="toast-close" onClick={() => {
+            <button className="toast-close dark:text-slate-400 dark:hover:text-slate-200" onClick={() => {
                 setIsExiting(true);
                 setTimeout(() => {
                     setIsVisible(false);

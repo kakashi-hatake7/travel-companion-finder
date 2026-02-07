@@ -97,28 +97,28 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
     };
 
     return (
-        <div className="packing-list-container">
-            <div className="packing-list-header">
+        <div className="packing-list-container dark:bg-slate-900 dark:text-slate-100">
+            <div className="packing-list-header dark:border-slate-800">
                 <div className="packing-title">
                     <Package size={24} />
                     <h2>Shared Packing List</h2>
                 </div>
-                <button className="packing-close-btn" onClick={onClose}>
+                <button className="packing-close-btn dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700" onClick={onClose}>
                     <X size={20} />
                 </button>
             </div>
 
             {/* Stats Bar */}
             <div className="packing-stats">
-                <div className="stat-pill">
+                <div className="stat-pill dark:bg-slate-800 dark:text-slate-300">
                     <span className="stat-number">{stats.total}</span>
                     <span className="stat-label">Total</span>
                 </div>
-                <div className="stat-pill claimed">
+                <div className="stat-pill claimed dark:bg-slate-800 dark:text-slate-300">
                     <span className="stat-number">{stats.claimed}</span>
                     <span className="stat-label">Claimed</span>
                 </div>
-                <div className="stat-pill mine">
+                <div className="stat-pill mine dark:bg-slate-800 dark:text-slate-300">
                     <span className="stat-number">{stats.mine}</span>
                     <span className="stat-label">Yours</span>
                 </div>
@@ -132,9 +132,9 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
                         placeholder="Add item to pack..."
                         value={newItemName}
                         onChange={(e) => setNewItemName(e.target.value)}
-                        className="add-item-input"
+                        className="add-item-input dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
                     />
-                    <button type="submit" className="add-item-btn" disabled={!newItemName.trim()}>
+                    <button type="submit" className="add-item-btn dark:bg-blue-600 dark:text-white" disabled={!newItemName.trim()}>
                         <Plus size={18} />
                     </button>
                 </div>
@@ -143,7 +143,7 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
                         <button
                             key={cat.id}
                             type="button"
-                            className={`category-chip ${selectedCategory === cat.id ? 'active' : ''}`}
+                            className={`category-chip ${selectedCategory === cat.id ? 'active' : ''} dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700`}
                             onClick={() => setSelectedCategory(cat.id)}
                         >
                             <span>{cat.icon}</span>
@@ -156,19 +156,19 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
             {/* Filter Tabs */}
             <div className="packing-filters">
                 <button
-                    className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'all' ? 'active' : ''} dark:bg-slate-800 dark:text-slate-300`}
                     onClick={() => setFilter('all')}
                 >
                     All Items
                 </button>
                 <button
-                    className={`filter-btn ${filter === 'mine' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'mine' ? 'active' : ''} dark:bg-slate-800 dark:text-slate-300`}
                     onClick={() => setFilter('mine')}
                 >
                     My Items
                 </button>
                 <button
-                    className={`filter-btn ${filter === 'unclaimed' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'unclaimed' ? 'active' : ''} dark:bg-slate-800 dark:text-slate-300`}
                     onClick={() => setFilter('unclaimed')}
                 >
                     Unclaimed
@@ -178,12 +178,12 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
             {/* Items List */}
             <div className="packing-items-list">
                 {loading ? (
-                    <div className="packing-loading">
+                    <div className="packing-loading dark:text-slate-300">
                         <div className="loading-spinner"></div>
                         <p>Loading packing list...</p>
                     </div>
                 ) : Object.keys(groupedItems).length === 0 ? (
-                    <div className="packing-empty">
+                    <div className="packing-empty dark:text-slate-400">
                         <Package size={48} />
                         <h3>No items yet</h3>
                         <p>Start adding items to your shared packing list!</p>
@@ -193,7 +193,7 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
                         const catInfo = getCategoryInfo(categoryId);
                         return (
                             <div key={categoryId} className="category-group">
-                                <div className="category-header">
+                                <div className="category-header dark:bg-slate-800/50 dark:text-slate-200">
                                     <span className="category-icon">{catInfo.icon}</span>
                                     <span className="category-name">{catInfo.name}</span>
                                     <span className="category-count">{categoryItems.length}</span>
@@ -202,10 +202,10 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
                                     {categoryItems.map(item => (
                                         <div
                                             key={item.id}
-                                            className={`packing-item ${item.claimedBy ? 'claimed' : ''} ${item.claimedBy === currentUser.uid ? 'mine' : ''}`}
+                                            className={`packing-item ${item.claimedBy ? 'claimed' : ''} ${item.claimedBy === currentUser.uid ? 'mine' : ''} dark:bg-slate-800 dark:border-slate-700`}
                                         >
                                             <button
-                                                className="claim-btn"
+                                                className="claim-btn dark:border-slate-600"
                                                 onClick={() => handleClaimItem(item)}
                                                 disabled={item.claimedBy && item.claimedBy !== currentUser.uid}
                                             >
@@ -214,13 +214,13 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
                                                 ) : item.claimedBy ? (
                                                     <User size={16} />
                                                 ) : (
-                                                    <div className="unclaimed-circle" />
+                                                    <div className="unclaimed-circle dark:border-slate-400" />
                                                 )}
                                             </button>
                                             <div className="item-info">
-                                                <span className="item-name">{item.name}</span>
+                                                <span className="item-name dark:text-slate-100">{item.name}</span>
                                                 {item.claimedBy && (
-                                                    <span className="claimed-by">
+                                                    <span className="claimed-by dark:text-slate-400">
                                                         {item.claimedBy === currentUser.uid
                                                             ? "You're bringing this"
                                                             : `${item.claimedByName || companionName} is bringing this`}
@@ -229,7 +229,7 @@ const PackingList = ({ tripId, currentUser, companionName, addToast, onClose }) 
                                             </div>
                                             {item.createdBy === currentUser.uid && (
                                                 <button
-                                                    className="delete-item-btn"
+                                                    className="delete-item-btn dark:text-slate-400 dark:hover:text-red-400"
                                                     onClick={() => handleDeleteItem(item.id)}
                                                 >
                                                     <Trash2 size={14} />

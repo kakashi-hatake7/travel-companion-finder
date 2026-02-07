@@ -125,18 +125,18 @@ export default function ProfilePage({ currentUser, onClose }) {
 
     if (loading) {
         return (
-            <div className="profile-overlay" onClick={onClose}>
-                <div className="profile-modal glass-card" onClick={e => e.stopPropagation()}>
-                    <div className="profile-loading">Loading profile...</div>
+            <div className="profile-overlay dark:bg-slate-950/80" onClick={onClose}>
+                <div className="profile-modal glass-card dark:bg-slate-900 dark:border dark:border-slate-800" onClick={e => e.stopPropagation()}>
+                    <div className="profile-loading dark:text-slate-300">Loading profile...</div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="profile-overlay" onClick={onClose}>
-            <div className="profile-modal glass-card" onClick={e => e.stopPropagation()}>
-                <button className="profile-close" onClick={onClose}>×</button>
+        <div className="profile-overlay dark:bg-slate-950/80" onClick={onClose}>
+            <div className="profile-modal glass-card dark:bg-slate-900 dark:border dark:border-slate-800" onClick={e => e.stopPropagation()}>
+                <button className="profile-close dark:text-slate-400 dark:hover:text-slate-200" onClick={onClose}>×</button>
 
                 {/* Header */}
                 <div className="profile-header">
@@ -150,19 +150,19 @@ export default function ProfilePage({ currentUser, onClose }) {
                     {isEditing ? (
                         <input
                             type="text"
-                            className="profile-name-input"
+                            className="profile-name-input dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700"
                             value={profile.name}
                             onChange={e => setProfile({ ...profile, name: e.target.value })}
                             placeholder="Your Name"
                         />
                     ) : (
-                        <h2 className="profile-name">{profile.name || 'Your Name'}</h2>
+                        <h2 className="profile-name dark:text-slate-100">{profile.name || 'Your Name'}</h2>
                     )}
 
-                    <p className="profile-email">{currentUser?.email}</p>
+                    <p className="profile-email dark:text-slate-400">{currentUser?.email}</p>
 
                     {isEditing && (
-                        <div className="avatar-color-picker">
+                        <div className="avatar-color-picker dark:text-slate-300">
                             <span>Avatar Color:</span>
                             <div className="color-options">
                                 {AVATAR_COLORS.map(color => (
@@ -182,10 +182,10 @@ export default function ProfilePage({ currentUser, onClose }) {
                 <div className="profile-content">
                     {/* Basic Info */}
                     <div className="profile-section">
-                        <h3><User size={18} /> Basic Info</h3>
+                        <h3 className="dark:text-slate-200"><User size={18} /> Basic Info</h3>
                         <div className="profile-fields">
                             <div className="profile-field">
-                                <label>Age</label>
+                                <label className="dark:text-slate-400">Age</label>
                                 {isEditing ? (
                                     <input
                                         type="number"
@@ -194,51 +194,55 @@ export default function ProfilePage({ currentUser, onClose }) {
                                         placeholder="Your age"
                                         min="13"
                                         max="100"
+                                        className="dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                     />
                                 ) : (
-                                    <span>{profile.age || 'Not specified'}</span>
+                                    <span className="dark:text-slate-100">{profile.age || 'Not specified'}</span>
                                 )}
                             </div>
 
                             <div className="profile-field">
-                                <label><GraduationCap size={14} /> School/University</label>
+                                <label className="dark:text-slate-400"><GraduationCap size={14} /> School/University</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
                                         value={profile.school}
                                         onChange={e => setProfile({ ...profile, school: e.target.value })}
                                         placeholder="Your school or university"
+                                        className="dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                     />
                                 ) : (
-                                    <span>{profile.school || 'Not specified'}</span>
+                                    <span className="dark:text-slate-100">{profile.school || 'Not specified'}</span>
                                 )}
                             </div>
 
                             <div className="profile-field-row">
                                 <div className="profile-field">
-                                    <label><MapPin size={14} /> City</label>
+                                    <label className="dark:text-slate-400"><MapPin size={14} /> City</label>
                                     {isEditing ? (
                                         <input
                                             type="text"
                                             value={profile.city}
                                             onChange={e => setProfile({ ...profile, city: e.target.value })}
                                             placeholder="City"
+                                            className="dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                         />
                                     ) : (
-                                        <span>{profile.city || 'Not specified'}</span>
+                                        <span className="dark:text-slate-100">{profile.city || 'Not specified'}</span>
                                     )}
                                 </div>
                                 <div className="profile-field">
-                                    <label><Globe size={14} /> Country</label>
+                                    <label className="dark:text-slate-400"><Globe size={14} /> Country</label>
                                     {isEditing ? (
                                         <input
                                             type="text"
                                             value={profile.country}
                                             onChange={e => setProfile({ ...profile, country: e.target.value })}
                                             placeholder="Country"
+                                            className="dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                         />
                                     ) : (
-                                        <span>{profile.country || 'Not specified'}</span>
+                                        <span className="dark:text-slate-100">{profile.country || 'Not specified'}</span>
                                     )}
                                 </div>
                             </div>
@@ -247,7 +251,7 @@ export default function ProfilePage({ currentUser, onClose }) {
 
                     {/* Travel Interests */}
                     <div className="profile-section">
-                        <h3><Heart size={18} /> Travel Interests</h3>
+                        <h3 className="dark:text-slate-200"><Heart size={18} /> Travel Interests</h3>
                         <div className="interests-grid">
                             {TRAVEL_INTERESTS.map(interest => {
                                 const Icon = interest.icon;
@@ -255,7 +259,7 @@ export default function ProfilePage({ currentUser, onClose }) {
                                 return (
                                     <button
                                         key={interest.id}
-                                        className={`interest-tag ${isSelected ? 'selected' : ''}`}
+                                        className={`interest-tag dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 ${isSelected ? 'selected dark:bg-blue-600 dark:text-white' : ''}`}
                                         onClick={() => isEditing && toggleInterest(interest.id)}
                                         disabled={!isEditing}
                                     >
@@ -269,14 +273,14 @@ export default function ProfilePage({ currentUser, onClose }) {
 
                     {/* Languages */}
                     <div className="profile-section">
-                        <h3><Languages size={18} /> Languages</h3>
+                        <h3 className="dark:text-slate-200"><Languages size={18} /> Languages</h3>
                         <div className="languages-grid">
                             {LANGUAGES.map(lang => {
                                 const isSelected = profile.languages.includes(lang);
                                 return (
                                     <button
                                         key={lang}
-                                        className={`language-tag ${isSelected ? 'selected' : ''}`}
+                                        className={`language-tag dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 ${isSelected ? 'selected dark:bg-blue-600 dark:text-white' : ''}`}
                                         onClick={() => isEditing && toggleLanguage(lang)}
                                         disabled={!isEditing}
                                     >
@@ -289,48 +293,50 @@ export default function ProfilePage({ currentUser, onClose }) {
 
                     {/* Bio */}
                     <div className="profile-section">
-                        <h3><MessageCircle size={18} /> Bio</h3>
+                        <h3 className="dark:text-slate-200"><MessageCircle size={18} /> Bio</h3>
                         {isEditing ? (
                             <textarea
-                                className="profile-bio-input"
+                                className="profile-bio-input dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                 value={profile.bio}
                                 onChange={e => setProfile({ ...profile, bio: e.target.value })}
                                 placeholder="Tell travelers about yourself..."
                                 maxLength={300}
                             />
                         ) : (
-                            <p className="profile-bio">{profile.bio || 'No bio yet. Add a short intro about yourself!'}</p>
+                            <p className="profile-bio dark:text-slate-300">{profile.bio || 'No bio yet. Add a short intro about yourself!'}</p>
                         )}
                     </div>
 
                     {/* Social Media */}
                     <div className="profile-section">
-                        <h3><Globe size={18} /> Social Media</h3>
+                        <h3 className="dark:text-slate-200"><Globe size={18} /> Social Media</h3>
                         <div className="social-fields">
                             <div className="social-field">
-                                <Instagram size={18} />
+                                <Instagram size={18} className="dark:text-slate-400" />
                                 {isEditing ? (
                                     <input
                                         type="text"
                                         value={profile.instagram}
                                         onChange={e => setProfile({ ...profile, instagram: e.target.value })}
                                         placeholder="Instagram username"
+                                        className="dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                     />
                                 ) : (
-                                    <span>{profile.instagram ? `@${profile.instagram}` : 'Not linked'}</span>
+                                    <span className="dark:text-slate-300">{profile.instagram ? `@${profile.instagram}` : 'Not linked'}</span>
                                 )}
                             </div>
                             <div className="social-field">
-                                <Twitter size={18} />
+                                <Twitter size={18} className="dark:text-slate-400" />
                                 {isEditing ? (
                                     <input
                                         type="text"
                                         value={profile.twitter}
                                         onChange={e => setProfile({ ...profile, twitter: e.target.value })}
                                         placeholder="Twitter/X username"
+                                        className="dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                     />
                                 ) : (
-                                    <span>{profile.twitter ? `@${profile.twitter}` : 'Not linked'}</span>
+                                    <span className="dark:text-slate-300">{profile.twitter ? `@${profile.twitter}` : 'Not linked'}</span>
                                 )}
                             </div>
                         </div>
@@ -341,17 +347,17 @@ export default function ProfilePage({ currentUser, onClose }) {
                 <div className="profile-actions">
                     {isEditing ? (
                         <>
-                            <button className="btn-secondary" onClick={() => setIsEditing(false)}>
+                            <button className="btn-secondary dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700" onClick={() => setIsEditing(false)}>
                                 <X size={18} />
                                 Cancel
                             </button>
-                            <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                            <button className="btn-primary dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white" onClick={handleSave} disabled={saving}>
                                 <Save size={18} />
                                 {saving ? 'Saving...' : 'Save Profile'}
                             </button>
                         </>
                     ) : (
-                        <button className="btn-primary" onClick={() => setIsEditing(true)}>
+                        <button className="btn-primary dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white" onClick={() => setIsEditing(true)}>
                             <Edit2 size={18} />
                             Edit Profile
                         </button>

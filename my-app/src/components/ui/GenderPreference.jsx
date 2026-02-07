@@ -39,7 +39,7 @@ export default function GenderPreference({
 
     return (
         <div className="gender-preference-wrapper">
-            <label className="gender-preference-label">
+            <label className="gender-preference-label dark:text-slate-200">
                 Who are you comfortable traveling with?
                 {required && <span className="required-asterisk">*</span>}
             </label>
@@ -49,7 +49,7 @@ export default function GenderPreference({
                     <button
                         key={option.id}
                         type="button"
-                        className={`gender-option ${value === option.id ? 'selected' : ''} ${option.color}`}
+                        className={`gender-option dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 ${value === option.id ? 'selected dark:bg-slate-700 dark:text-white dark:border-blue-500' : ''} ${option.color}`}
                         onClick={() => onChange(option.id)}
                     >
                         <div className="option-icon">{option.icon}</div>
@@ -64,7 +64,7 @@ export default function GenderPreference({
                 </div>
             )}
 
-            <p className="gender-preference-helper">
+            <p className="gender-preference-helper dark:text-slate-400">
                 Note: We will try to match you based on this preference, but availability depends on other travelers.
             </p>
         </div>

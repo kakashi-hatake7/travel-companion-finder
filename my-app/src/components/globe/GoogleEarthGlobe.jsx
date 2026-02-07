@@ -186,7 +186,7 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
     }
 
     return (
-        <div className="globe-container google-earth-container">
+        <div className="globe-container google-earth-container bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={defaultCenter}
@@ -219,34 +219,34 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
                         position={selectedCity.position}
                         onCloseClick={() => setSelectedCity(null)}
                     >
-                        <div className="map-info-window">
-                            <h3>{selectedCity.name}</h3>
-                            <p className="info-country">{selectedCity.country}</p>
-                            <div className="info-stats">
-                                <span className="info-count">{selectedCity.count} travelers</span>
+                        <div className="map-info-window bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-2 min-w-[200px]">
+                            <h3 className="font-bold text-lg border-b border-slate-200 dark:border-slate-700 pb-1 mb-2">{selectedCity.name}</h3>
+                            <p className="info-country text-sm text-slate-600 dark:text-slate-400 mb-2">{selectedCity.country}</p>
+                            <div className="info-stats bg-slate-100 dark:bg-slate-800 p-2 rounded mb-2">
+                                <span className="info-count font-semibold text-indigo-600 dark:text-indigo-400">{selectedCity.count} travelers</span>
                             </div>
 
-                            <div className="info-trips">
-                                <h4>Upcoming Trips:</h4>
+                            <div className="info-trips space-y-2">
+                                <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase">Upcoming Trips:</h4>
                                 {selectedCity.trips.slice(0, 3).map((trip, idx) => (
-                                    <div key={idx} className="trip-mini-item">
-                                        <div className="trip-mini-info">
+                                    <div key={idx} className="trip-mini-item bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700">
+                                        <div className="trip-mini-info flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300 mb-1">
                                             <Clock size={12} />
                                             <span>{trip.date} at {trip.time}</span>
                                         </div>
-                                        <div className="trip-mini-info">
+                                        <div className="trip-mini-info flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
                                             <Navigation size={12} />
                                             <span>From {trip.startPoint}</span>
                                         </div>
                                     </div>
                                 ))}
                                 {selectedCity.trips.length > 3 && (
-                                    <p className="info-more">+{selectedCity.trips.length - 3} more trips</p>
+                                    <p className="info-more text-xs text-center text-slate-400 italic">+{selectedCity.trips.length - 3} more trips</p>
                                 )}
                             </div>
 
                             <button
-                                className="info-register-btn"
+                                className="info-register-btn w-full mt-3 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-3 rounded flex items-center justify-center gap-1 text-sm transition-colors"
                                 onClick={() => {
                                     onRegisterTrip(selectedCity.name);
                                     setSelectedCity(null);
@@ -261,34 +261,35 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
             </GoogleMap>
 
             {/* Search Box */}
-            <div className="map-search-container">
+            <div className="map-search-container absolute top-4 left-4 z-10">
                 <button
-                    className="map-control-btn search-toggle"
+                    className="map-control-btn search-toggle bg-white dark:bg-slate-900 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     onClick={() => setIsSearchOpen(!isSearchOpen)}
                 >
                     <Search size={20} />
                 </button>
 
                 {isSearchOpen && (
-                    <div className="map-search-dropdown">
+                    <div className="map-search-dropdown absolute top-full left-0 mt-2 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 w-64 overflow-hidden">
                         <input
                             type="text"
                             placeholder="Search destinations..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             autoFocus
+                            className="w-full p-3 bg-transparent border-b border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none"
                         />
                         {searchResults.length > 0 && (
-                            <div className="search-results">
+                            <div className="search-results max-h-60 overflow-y-auto">
                                 {searchResults.map(loc => (
                                     <button
                                         key={loc.name}
-                                        className="search-result-item"
+                                        className="search-result-item w-full text-left p-2 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors"
                                         onClick={() => handleSearchSelect(loc)}
                                     >
-                                        <MapPin size={14} />
-                                        <span>{loc.name}</span>
-                                        <span className="result-country">{loc.country}</span>
+                                        <MapPin size={14} className="text-slate-400" />
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{loc.name}</span>
+                                        <span className="result-country text-xs text-slate-500 ml-auto">{loc.country}</span>
                                     </button>
                                 ))}
                             </div>
@@ -298,9 +299,9 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
             </div>
 
             {/* Custom Controls */}
-            <div className="map-controls">
+            <div className="map-controls absolute right-4 bottom-24 flex flex-col gap-2">
                 <button
-                    className="map-control-btn"
+                    className="map-control-btn bg-white dark:bg-slate-900 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     onClick={handleZoomIn}
                     title="Zoom In"
                 >
@@ -308,17 +309,15 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
                 </button>
 
                 <button
-                    className="map-control-btn"
+                    className="map-control-btn bg-white dark:bg-slate-900 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     onClick={handleZoomOut}
                     title="Zoom Out"
                 >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                        <line x1="5" y1="10" x2="15" y2="10" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
+                    <Minus size={20} />
                 </button>
 
                 <button
-                    className="map-control-btn"
+                    className="map-control-btn bg-white dark:bg-slate-900 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     onClick={handleRotate}
                     title="Rotate Globe"
                 >
@@ -326,7 +325,7 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
                 </button>
 
                 <button
-                    className="map-control-btn"
+                    className="map-control-btn bg-white dark:bg-slate-900 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     onClick={resetView}
                     title="Reset View"
                 >
@@ -335,14 +334,14 @@ export default function GoogleEarthGlobe({ trips, onRegisterTrip, destinations }
             </div>
 
             {/* Stats Bar */}
-            <div className="globe-stats">
-                <div className="stat-pill">
-                    <MapPin size={14} />
-                    <span>{markerData.length} Active Destinations</span>
+            <div className="globe-stats absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
+                <div className="stat-pill bg-white/90 dark:bg-slate-900/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+                    <MapPin size={14} className="text-indigo-600 dark:text-indigo-400" />
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{markerData.length} Active Destinations</span>
                 </div>
-                <div className="stat-pill">
-                    <Navigation size={14} />
-                    <span>{trips.length} Total Trips</span>
+                <div className="stat-pill bg-white/90 dark:bg-slate-900/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+                    <Navigation size={14} className="text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{trips.length} Total Trips</span>
                 </div>
             </div>
         </div>

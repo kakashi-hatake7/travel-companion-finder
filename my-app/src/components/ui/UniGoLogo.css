@@ -5,7 +5,7 @@
     flex-direction: row;
     /* Horizontal layout like Airbnb */
     align-items: center;
-    gap: var(--spacing-3);
+    gap: var(--spacing-1);
     transition: transform var(--transition-base);
 }
 
@@ -86,10 +86,10 @@
 /* Text Styling - Airbnb Typography */
 .unigo-brand-text {
     font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: #FF385C;
+    color: #8B5CF6;
     transition: all var(--transition-base);
     white-space: nowrap;
     line-height: 1;
@@ -97,7 +97,7 @@
 
 /* Hover effect - slightly darker */
 .unigo-logo-container.hovered .unigo-brand-text {
-    color: #E31C5F;
+    color: #7C3AED;
 }
 
 /* Responsive Design */

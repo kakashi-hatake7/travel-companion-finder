@@ -82,13 +82,13 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
     const isApprovedByUser = (activity) => activity.approvedBy?.includes(currentUser.uid);
 
     return (
-        <div className="itinerary-container">
+        <div className="itinerary-container dark:bg-slate-900">
             <div className="itinerary-header">
-                <div className="itinerary-title">
+                <div className="itinerary-title dark:text-slate-100">
                     <Calendar size={24} />
                     <h2>Trip Itinerary</h2>
                 </div>
-                <button className="itinerary-close-btn" onClick={onClose}>
+                <button className="itinerary-close-btn dark:text-slate-400 dark:hover:text-slate-200" onClick={onClose}>
                     <X size={20} />
                 </button>
             </div>
@@ -96,7 +96,7 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
             {/* Day Selector */}
             <div className="day-selector">
                 <button
-                    className="day-nav-btn"
+                    className="day-nav-btn dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     onClick={() => setSelectedDay(Math.max(1, selectedDay - 1))}
                     disabled={selectedDay === 1}
                 >
@@ -106,7 +106,7 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
                     {Array.from({ length: numDays }, (_, i) => i + 1).map(day => (
                         <button
                             key={day}
-                            className={`day-tab ${selectedDay === day ? 'active' : ''}`}
+                            className={`day-tab dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 ${selectedDay === day ? 'active dark:bg-blue-600 dark:text-white' : ''}`}
                             onClick={() => setSelectedDay(day)}
                         >
                             <span className="day-number">Day {day}</span>
@@ -117,7 +117,7 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
                     ))}
                 </div>
                 <button
-                    className="day-nav-btn"
+                    className="day-nav-btn dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     onClick={() => setSelectedDay(Math.min(numDays, selectedDay + 1))}
                     disabled={selectedDay === numDays}
                 >
@@ -127,26 +127,26 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
 
             {/* Add Activity Button / Form */}
             {!showAddForm ? (
-                <button className="add-activity-btn" onClick={() => setShowAddForm(true)}>
+                <button className="add-activity-btn dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700" onClick={() => setShowAddForm(true)}>
                     <Plus size={18} />
                     Add Activity for Day {selectedDay}
                 </button>
             ) : (
-                <form className="add-activity-form" onSubmit={handleAddActivity}>
+                <form className="add-activity-form dark:bg-slate-800" onSubmit={handleAddActivity}>
                     <div className="form-row">
                         <input
                             type="text"
                             placeholder="What's the plan?"
                             value={newActivity.title}
                             onChange={(e) => setNewActivity({ ...newActivity, title: e.target.value })}
-                            className="activity-input"
+                            className="activity-input dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                             autoFocus
                         />
                         <input
                             type="time"
                             value={newActivity.time}
                             onChange={(e) => setNewActivity({ ...newActivity, time: e.target.value })}
-                            className="time-input"
+                            className="time-input dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700"
                         />
                     </div>
                     <div className="form-row">
@@ -155,7 +155,7 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
                             placeholder="Location (optional)"
                             value={newActivity.location}
                             onChange={(e) => setNewActivity({ ...newActivity, location: e.target.value })}
-                            className="location-input"
+                            className="location-input dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                         />
                     </div>
                     <div className="type-selector">
@@ -163,7 +163,7 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
                             <button
                                 key={type.id}
                                 type="button"
-                                className={`type-chip ${newActivity.type === type.id ? 'active' : ''}`}
+                                className={`type-chip dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 ${newActivity.type === type.id ? 'active dark:bg-blue-600 dark:text-white' : ''}`}
                                 onClick={() => setNewActivity({ ...newActivity, type: type.id })}
                                 style={{ '--type-color': type.color }}
                             >
@@ -176,14 +176,14 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
                         placeholder="Add notes (optional)"
                         value={newActivity.notes}
                         onChange={(e) => setNewActivity({ ...newActivity, notes: e.target.value })}
-                        className="notes-input"
+                        className="notes-input dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                         rows={2}
                     />
                     <div className="form-actions">
-                        <button type="button" className="cancel-btn" onClick={() => setShowAddForm(false)}>
+                        <button type="button" className="cancel-btn dark:text-slate-400 dark:hover:text-slate-200" onClick={() => setShowAddForm(false)}>
                             Cancel
                         </button>
-                        <button type="submit" className="submit-activity-btn" disabled={!newActivity.title}>
+                        <button type="submit" className="submit-activity-btn dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700" disabled={!newActivity.title}>
                             Add Activity
                         </button>
                     </div>
@@ -193,7 +193,7 @@ const ItineraryBuilder = ({ tripId, tripDate, currentUser, companionName, addToa
             {/* Timeline */}
             <div className="timeline-container">
                 {loading ? (
-                    <div className="timeline-loading">
+                    <div className="timeline-loading dark:text-slate-400">
                         <div className="loading-spinner"></div>
                         <p>Loading itinerary...</p>
                     </div>

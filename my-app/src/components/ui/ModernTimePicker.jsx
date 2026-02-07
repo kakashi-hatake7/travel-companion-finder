@@ -69,9 +69,9 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
     const minuteOptions = [0, 15, 30, 45];
 
     return (
-        <div className="modern-time-picker" ref={pickerRef}>
+        <div className="modern-time-picker dark:text-slate-100" ref={pickerRef}>
             <div
-                className={`time-input-display ${isOpen ? 'active' : ''} ${value ? 'filled' : ''}`}
+                className={`time-input-display ${isOpen ? 'active' : ''} ${value ? 'filled' : ''} dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100`}
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <Clock size={18} className="time-icon" />
@@ -79,8 +79,8 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
             </div>
 
             {isOpen && (
-                <div className="time-picker-dropdown">
-                    <div className="time-picker-header">
+                <div className="time-picker-dropdown dark:bg-slate-800 dark:border-slate-700">
+                    <div className="time-picker-header dark:border-slate-700 dark:text-slate-100">
                         <Clock size={20} />
                         <span>Select Time</span>
                     </div>
@@ -88,7 +88,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                     <div className="time-picker-body">
                         {/* Clock Visual Display */}
                         <div className="clock-display">
-                            <div className="clock-face">
+                            <div className="clock-face dark:bg-slate-900 dark:border-slate-700">
                                 <div className="clock-center"></div>
                                 <div
                                     className="clock-hand hour-hand"
@@ -107,14 +107,14 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                 {[12, 3, 6, 9].map((num) => (
                                     <div
                                         key={num}
-                                        className={`clock-number clock-number-${num}`}
+                                        className={`clock-number clock-number-${num} dark:text-slate-400`}
                                     >
                                         {num}
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="selected-time-display">
+                            <div className="selected-time-display dark:text-slate-100">
                                 {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')} {period}
                             </div>
                         </div>
@@ -122,7 +122,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                         {/* Quick Time Presets */}
                         <div className="time-presets">
                             <button
-                                className="preset-btn"
+                                className="preset-btn dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
                                 onClick={() => {
                                     handleHourChange(6);
                                     handleMinuteChange(0);
@@ -133,7 +133,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                 🌅 Morning (6 AM)
                             </button>
                             <button
-                                className="preset-btn"
+                                className="preset-btn dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
                                 onClick={() => {
                                     handleHourChange(2);
                                     handleMinuteChange(0);
@@ -144,7 +144,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                 ☀️ Afternoon (2 PM)
                             </button>
                             <button
-                                className="preset-btn"
+                                className="preset-btn dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
                                 onClick={() => {
                                     handleHourChange(6);
                                     handleMinuteChange(0);
@@ -155,7 +155,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                 🌆 Evening (6 PM)
                             </button>
                             <button
-                                className="preset-btn"
+                                className="preset-btn dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
                                 onClick={() => {
                                     handleHourChange(10);
                                     handleMinuteChange(0);
@@ -175,7 +175,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                     {hourOptions.map((hour) => (
                                         <button
                                             key={hour}
-                                            className={`time-option ${hours === hour ? 'selected' : ''}`}
+                                            className={`time-option ${hours === hour ? 'selected' : ''} dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600`}
                                             onClick={() => handleHourChange(hour)}
                                         >
                                             {hour}
@@ -190,7 +190,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                     {minuteOptions.map((minute) => (
                                         <button
                                             key={minute}
-                                            className={`time-option ${minutes === minute ? 'selected' : ''}`}
+                                            className={`time-option ${minutes === minute ? 'selected' : ''} dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600`}
                                             onClick={() => handleMinuteChange(minute)}
                                         >
                                             {String(minute).padStart(2, '0')}
@@ -203,12 +203,12 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
                                 <label>Period</label>
                                 <div className="period-toggle-container">
                                     <div
-                                        className="period-toggle-switch"
+                                        className="period-toggle-switch dark:bg-slate-900"
                                         onClick={handlePeriodToggle}
                                     >
                                         <div className={`toggle-slider ${period === 'PM' ? 'pm' : 'am'}`}></div>
-                                        <span className={`toggle-option ${period === 'AM' ? 'active' : ''}`}>AM</span>
-                                        <span className={`toggle-option ${period === 'PM' ? 'active' : ''}`}>PM</span>
+                                        <span className={`toggle-option ${period === 'AM' ? 'active' : ''} dark:text-slate-400`}>AM</span>
+                                        <span className={`toggle-option ${period === 'PM' ? 'active' : ''} dark:text-slate-400`}>PM</span>
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +217,7 @@ export default function ModernTimePicker({ value, onChange, placeholder = "Selec
 
                     <div className="time-picker-footer">
                         <button
-                            className="time-done-btn"
+                            className="time-done-btn dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
                             onClick={() => setIsOpen(false)}
                         >
                             Done

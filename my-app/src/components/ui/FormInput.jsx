@@ -31,9 +31,9 @@ export default function FormInput({
     ...props
 }) {
     const getInputClassName = () => {
-        let classes = 'form-input-field';
-        if (error) classes += ' input-error';
-        else if (isValid && value) classes += ' input-valid';
+        let classes = 'form-input-field dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500';
+        if (error) classes += ' input-error dark:border-red-500';
+        else if (isValid && value) classes += ' input-valid dark:border-green-500';
         if (className) classes += ` ${className}`;
         return classes;
     };
@@ -41,7 +41,7 @@ export default function FormInput({
     return (
         <div className="form-input-wrapper">
             {label && (
-                <label className="form-input-label">
+                <label className="form-input-label dark:text-slate-300">
                     {label}
                     {required && <span className="required-asterisk">*</span>}
                 </label>

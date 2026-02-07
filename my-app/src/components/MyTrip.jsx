@@ -218,7 +218,7 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
         const confirmedCompanion = tripCompanions.find(c => c.status === 'confirmed');
 
         return (
-            <div key={trip.id} className={`trip-details-card glass-card ${isPast ? 'past-trip-card' : ''}`}>
+            <div key={trip.id} className={`trip-details-card glass-card dark:bg-slate-900 dark:border-slate-800 ${isPast ? 'past-trip-card' : ''}`}>
                 {/* Trip Status Badge */}
                 {!isPast && (
                     <div className="trip-status-badge-container">
@@ -257,8 +257,8 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                             <Navigation size={24} />
                         </div>
                         <div className="trip-info-text">
-                            <span className="trip-info-label">Destination</span>
-                            <span className="trip-info-value destination-value">{trip.destination}</span>
+                            <span className="trip-info-label dark:text-slate-400">Destination</span>
+                            <span className="trip-info-value destination-value dark:text-slate-100">{trip.destination}</span>
                         </div>
                     </div>
 
@@ -267,8 +267,8 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                             <MapPin size={20} />
                         </div>
                         <div className="trip-info-text">
-                            <span className="trip-info-label">Starting Point</span>
-                            <span className="trip-info-value">{trip.startPoint}</span>
+                            <span className="trip-info-label dark:text-slate-400">Starting Point</span>
+                            <span className="trip-info-value dark:text-slate-100">{trip.startPoint}</span>
                         </div>
                     </div>
 
@@ -277,8 +277,8 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                             <Calendar size={20} />
                         </div>
                         <div className="trip-info-text">
-                            <span className="trip-info-label">Travel Date</span>
-                            <span className="trip-info-value">{formatDate(trip.date)}</span>
+                            <span className="trip-info-label dark:text-slate-400">Travel Date</span>
+                            <span className="trip-info-value dark:text-slate-100">{formatDate(trip.date)}</span>
                         </div>
                     </div>
 
@@ -287,8 +287,8 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                             <Clock size={20} />
                         </div>
                         <div className="trip-info-text">
-                            <span className="trip-info-label">Departure Time</span>
-                            <span className="trip-info-value">{formatTime(trip.time)}</span>
+                            <span className="trip-info-label dark:text-slate-400">Departure Time</span>
+                            <span className="trip-info-value dark:text-slate-100">{formatTime(trip.time)}</span>
                         </div>
                     </div>
 
@@ -297,8 +297,8 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                             <Phone size={20} />
                         </div>
                         <div className="trip-info-text">
-                            <span className="trip-info-label">Contact Number</span>
-                            <span className="trip-info-value">{trip.contact}</span>
+                            <span className="trip-info-label dark:text-slate-400">Contact Number</span>
+                            <span className="trip-info-value dark:text-slate-100">{trip.contact}</span>
                         </div>
                     </div>
                 </div>
@@ -306,7 +306,7 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                 {/* View Companions Button - only show if matches exist */}
                 {!isPast && matchCount > 0 && !confirmedCompanion && (
                     <button
-                        className="view-companions-btn"
+                        className="view-companions-btn dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
                         onClick={() => toggleExpand(trip.id)}
                     >
                         {isExpanded ? (
@@ -327,14 +327,14 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                 {isExpanded && (
                     <div className="companions-list">
                         {loadingCompanions[trip.id] ? (
-                            <div className="loading-companions">
+                            <div className="loading-companions dark:text-slate-400">
                                 <Sparkles className="spin" size={20} />
                                 Loading companions...
                             </div>
                         ) : tripCompanions.length > 0 ? (
                             tripCompanions.map(companion => renderCompanionCard(companion, trip.id))
                         ) : (
-                            <p className="no-companions">No eligible companions found.</p>
+                            <p className="no-companions dark:text-slate-400">No eligible companions found.</p>
                         )}
                     </div>
                 )}

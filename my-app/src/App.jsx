@@ -17,6 +17,7 @@ import FormInput from './components/ui/FormInput';
 import EmptyState from './components/ui/EmptyState';
 import GenderPreference from './components/ui/GenderPreference';
 import GroupModeToggle from './components/ui/GroupModeToggle';
+import Footer from './components/ui/Footer';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -1165,6 +1166,9 @@ export default function TravelCompanionFinder() {
         message={confirmationData.message}
         matchCount={confirmationData.matchCount}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

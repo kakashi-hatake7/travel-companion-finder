@@ -83,7 +83,7 @@ export default function LeafletGlobe({ trips, onRegisterTrip }) {
     };
 
     return (
-        <div className="globe-container leaflet-globe-container">
+        <div className="globe-container leaflet-globe-container h-full w-full bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
             <MapContainer
                 center={mapCenter}
                 zoom={5}
@@ -93,6 +93,7 @@ export default function LeafletGlobe({ trips, onRegisterTrip }) {
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    className="dark:opacity-75 dark:invert dark:hue-rotate-180 dark:brightness-95 dark:contrast-90"
                 />
 
                 <MapController center={mapCenter} />

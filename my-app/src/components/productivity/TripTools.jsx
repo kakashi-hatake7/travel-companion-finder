@@ -100,18 +100,18 @@ const TripTools = ({ tripId, tripData, currentUser, companionId, companionName, 
 
     // Render tools hub
     return (
-        <div className="trip-tools-container">
-            <div className="trip-tools-header">
+        <div className="trip-tools-container dark:bg-slate-900 dark:text-slate-100">
+            <div className="trip-tools-header dark:border-slate-800">
                 <div className="tools-title">
                     <Briefcase size={24} />
                     <div>
                         <h2>Trip Tools</h2>
-                        <p className="tools-subtitle">
+                        <p className="tools-subtitle dark:text-slate-400">
                             {tripData?.destination} with {companionName || 'your companion'}
                         </p>
                     </div>
                 </div>
-                <button className="tools-close-btn" onClick={onClose}>
+                <button className="tools-close-btn dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700" onClick={onClose}>
                     <X size={20} />
                 </button>
             </div>
@@ -122,7 +122,7 @@ const TripTools = ({ tripId, tripData, currentUser, companionId, companionName, 
                     return (
                         <button
                             key={tool.id}
-                            className="tool-card"
+                            className="tool-card dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
                             onClick={() => setActiveTool(tool.id)}
                             style={{ '--tool-color': tool.color, '--tool-gradient': tool.gradient }}
                         >
@@ -136,7 +136,7 @@ const TripTools = ({ tripId, tripData, currentUser, companionId, companionName, 
                 })}
             </div>
 
-            <div className="tools-tip">
+            <div className="tools-tip dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-200">
                 <span className="tip-icon">💡</span>
                 <p>
                     All tools sync in real-time with your companion.

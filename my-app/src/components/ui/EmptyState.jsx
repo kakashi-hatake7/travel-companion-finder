@@ -20,18 +20,18 @@ export default function EmptyState({
     className = ''
 }) {
     return (
-        <div className={`empty-state-container glass-card ${className}`}>
-            <div className="empty-state-icon-wrapper">
+        <div className={`empty-state-container glass-card dark:bg-slate-800 dark:border dark:border-slate-700 ${className}`}>
+            <div className="empty-state-icon-wrapper dark:bg-slate-700/50">
                 {icon}
             </div>
 
             <div className="empty-state-content">
-                <h3 className="empty-state-title">{title}</h3>
-                <p className="empty-state-description">{description}</p>
+                <h3 className="empty-state-title dark:text-slate-100">{title}</h3>
+                <p className="empty-state-description dark:text-slate-300">{description}</p>
             </div>
 
             {actionText && onAction && (
-                <button className="empty-state-action-btn" onClick={onAction}>
+                <button className="empty-state-action-btn dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white" onClick={onAction}>
                     {actionText}
                 </button>
             )}

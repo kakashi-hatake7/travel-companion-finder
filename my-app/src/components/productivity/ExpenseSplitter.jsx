@@ -74,86 +74,86 @@ const ExpenseSplitter = ({ tripId, currentUser, companionId, companionName, addT
     };
 
     return (
-        <div className="expense-splitter-container">
+        <div className="expense-splitter-container dark:bg-slate-900">
             <div className="expense-header">
-                <div className="expense-title">
+                <div className="expense-title dark:text-slate-100">
                     <Wallet size={24} />
                     <h2>Expense Splitter</h2>
                 </div>
-                <button className="expense-close-btn" onClick={onClose}>
+                <button className="expense-close-btn dark:text-slate-400 dark:hover:text-slate-200" onClick={onClose}>
                     <X size={20} />
                 </button>
             </div>
 
             {/* Balance Summary */}
             <div className="balance-summary">
-                <div className="balance-card">
+                <div className="balance-card dark:bg-slate-800 dark:border-slate-700">
                     <div className="balance-users">
                         <div className="balance-user you">
                             <span className="user-avatar">{currentUser.displayName?.charAt(0) || 'Y'}</span>
-                            <span className="user-name">You</span>
-                            <span className="user-paid">{formatCurrency(balance.userPaid)}</span>
+                            <span className="user-name dark:text-slate-100">You</span>
+                            <span className="user-paid dark:text-slate-400">{formatCurrency(balance.userPaid)}</span>
                         </div>
-                        <div className="balance-arrow">
+                        <div className="balance-arrow dark:text-slate-500">
                             <ArrowRight size={20} />
                         </div>
                         <div className="balance-user companion">
                             <span className="user-avatar">{companionName?.charAt(0) || 'C'}</span>
-                            <span className="user-name">{companionName || 'Companion'}</span>
-                            <span className="user-paid">{formatCurrency(balance.companionPaid)}</span>
+                            <span className="user-name dark:text-slate-100">{companionName || 'Companion'}</span>
+                            <span className="user-paid dark:text-slate-400">{formatCurrency(balance.companionPaid)}</span>
                         </div>
                     </div>
 
                     <div className="balance-result">
                         {balance.userBalance > 0 ? (
-                            <div className="balance-owed positive">
-                                <span className="owed-label">{companionName || 'Companion'} owes you</span>
-                                <span className="owed-amount">{formatCurrency(balance.userBalance)}</span>
+                            <div className="balance-owed positive dark:bg-green-900/20">
+                                <span className="owed-label dark:text-green-300">{companionName || 'Companion'} owes you</span>
+                                <span className="owed-amount dark:text-green-400">{formatCurrency(balance.userBalance)}</span>
                             </div>
                         ) : balance.userBalance < 0 ? (
-                            <div className="balance-owed negative">
-                                <span className="owed-label">You owe {companionName || 'Companion'}</span>
-                                <span className="owed-amount">{formatCurrency(Math.abs(balance.userBalance))}</span>
+                            <div className="balance-owed negative dark:bg-red-900/20">
+                                <span className="owed-label dark:text-red-300">You owe {companionName || 'Companion'}</span>
+                                <span className="owed-amount dark:text-red-400">{formatCurrency(Math.abs(balance.userBalance))}</span>
                             </div>
                         ) : (
-                            <div className="balance-owed settled">
-                                <span className="owed-label">All settled up! 🎉</span>
+                            <div className="balance-owed settled dark:bg-slate-700">
+                                <span className="owed-label dark:text-slate-300">All settled up! 🎉</span>
                             </div>
                         )}
                     </div>
 
                     <div className="total-expenses">
-                        <span>Total Trip Expenses</span>
-                        <span className="total-amount">{formatCurrency(balance.totalExpenses)}</span>
+                        <span className="dark:text-slate-300">Total Trip Expenses</span>
+                        <span className="total-amount dark:text-slate-100">{formatCurrency(balance.totalExpenses)}</span>
                     </div>
                 </div>
             </div>
 
             {/* Add Expense Button / Form */}
             {!showAddForm ? (
-                <button className="add-expense-btn" onClick={() => setShowAddForm(true)}>
+                <button className="add-expense-btn dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700" onClick={() => setShowAddForm(true)}>
                     <Plus size={18} />
                     Add Expense
                 </button>
             ) : (
-                <form className="add-expense-form" onSubmit={handleAddExpense}>
+                <form className="add-expense-form dark:bg-slate-800" onSubmit={handleAddExpense}>
                     <div className="form-row">
                         <input
                             type="text"
                             placeholder="What did you pay for?"
                             value={newExpense.description}
                             onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                            className="expense-input"
+                            className="expense-input dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                             autoFocus
                         />
                         <div className="amount-input-wrapper">
-                            <span className="currency-symbol">₹</span>
+                            <span className="currency-symbol dark:text-slate-300">₹</span>
                             <input
                                 type="number"
                                 placeholder="0"
                                 value={newExpense.amount}
                                 onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                                className="amount-input"
+                                className="amount-input dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:placeholder-slate-500"
                                 min="0"
                             />
                         </div>
@@ -163,7 +163,7 @@ const ExpenseSplitter = ({ tripId, currentUser, companionId, companionName, addT
                             <button
                                 key={cat.id}
                                 type="button"
-                                className={`expense-category-chip ${newExpense.category === cat.id ? 'active' : ''}`}
+                                className={`expense-category-chip dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 ${newExpense.category === cat.id ? 'active dark:bg-blue-600 dark:text-white' : ''}`}
                                 onClick={() => setNewExpense({ ...newExpense, category: cat.id })}
                             >
                                 <span>{cat.icon}</span>
@@ -171,10 +171,10 @@ const ExpenseSplitter = ({ tripId, currentUser, companionId, companionName, addT
                         ))}
                     </div>
                     <div className="form-actions">
-                        <button type="button" className="cancel-btn" onClick={() => setShowAddForm(false)}>
+                        <button type="button" className="cancel-btn dark:text-slate-400 dark:hover:text-slate-200" onClick={() => setShowAddForm(false)}>
                             Cancel
                         </button>
-                        <button type="submit" className="submit-expense-btn" disabled={!newExpense.description || !newExpense.amount}>
+                        <button type="submit" className="submit-expense-btn dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700" disabled={!newExpense.description || !newExpense.amount}>
                             Add Expense
                         </button>
                     </div>
@@ -183,18 +183,18 @@ const ExpenseSplitter = ({ tripId, currentUser, companionId, companionName, addT
 
             {/* Expenses List */}
             <div className="expenses-list">
-                <h3 className="expenses-list-title">
+                <h3 className="expenses-list-title dark:text-slate-200">
                     <Receipt size={16} />
                     Recent Expenses
                 </h3>
 
                 {loading ? (
-                    <div className="expenses-loading">
+                    <div className="expenses-loading dark:text-slate-400">
                         <div className="loading-spinner"></div>
                         <p>Loading expenses...</p>
                     </div>
                 ) : expenses.length === 0 ? (
-                    <div className="expenses-empty">
+                    <div className="expenses-empty dark:text-slate-400">
                         <Wallet size={48} />
                         <h3>No expenses yet</h3>
                         <p>Start logging shared expenses for your trip!</p>

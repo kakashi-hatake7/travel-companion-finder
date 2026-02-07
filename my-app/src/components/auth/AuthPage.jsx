@@ -130,55 +130,58 @@ export default function AuthPage({ onClose, onSuccess }) {
     };
 
     return (
-        <div className="auth-overlay" onClick={onClose}>
-            <div className="auth-modal glass-card" onClick={e => e.stopPropagation()}>
-                <button className="auth-close" onClick={onClose}>×</button>
+        <div className="auth-overlay dark:bg-slate-950/80" onClick={onClose}>
+            <div className="auth-modal glass-card dark:bg-slate-900 dark:border dark:border-slate-800" onClick={e => e.stopPropagation()}>
+                <button className="auth-close dark:text-slate-400 dark:hover:text-slate-200" onClick={onClose}>×</button>
 
                 <div className="auth-header">
-                    <div className="auth-icon">
+                    <div className="auth-icon dark:bg-blue-500/20 dark:text-blue-400">
                         <Sparkles size={28} />
                     </div>
-                    <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
-                    <p>{isLogin ? 'Sign in to continue your journey' : 'Join UniGo today'}</p>
+                    <h2 className="dark:text-slate-100">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+                    <p className="dark:text-slate-400">{isLogin ? 'Sign in to continue your journey' : 'Join UniGo today'}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     {!isLogin && (
-                        <div className="auth-input-group">
-                            <User size={18} className="auth-input-icon" />
+                        <div className="auth-input-group dark:bg-slate-950 dark:border-slate-700">
+                            <User size={18} className="auth-input-icon dark:text-slate-400" />
                             <input
                                 type="text"
                                 placeholder="Full Name"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 required={!isLogin}
+                                className="dark:text-slate-100 dark:placeholder-slate-500"
                             />
                         </div>
                     )}
 
-                    <div className="auth-input-group">
-                        <Mail size={18} className="auth-input-icon" />
+                    <div className="auth-input-group dark:bg-slate-950 dark:border-slate-700">
+                        <Mail size={18} className="auth-input-icon dark:text-slate-400" />
                         <input
                             type="email"
                             placeholder="Email Address"
                             value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
                             required
+                            className="dark:text-slate-100 dark:placeholder-slate-500"
                         />
                     </div>
 
-                    <div className="auth-input-group">
-                        <Lock size={18} className="auth-input-icon" />
+                    <div className="auth-input-group dark:bg-slate-950 dark:border-slate-700">
+                        <Lock size={18} className="auth-input-icon dark:text-slate-400" />
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
                             value={formData.password}
                             onChange={e => setFormData({ ...formData, password: e.target.value })}
                             required
+                            className="dark:text-slate-100 dark:placeholder-slate-500"
                         />
                         <button
                             type="button"
-                            className="auth-password-toggle"
+                            className="auth-password-toggle dark:text-slate-400 dark:hover:text-slate-200"
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -186,14 +189,15 @@ export default function AuthPage({ onClose, onSuccess }) {
                     </div>
 
                     {!isLogin && (
-                        <div className="auth-input-group">
-                            <Lock size={18} className="auth-input-icon" />
+                        <div className="auth-input-group dark:bg-slate-950 dark:border-slate-700">
+                            <Lock size={18} className="auth-input-icon dark:text-slate-400" />
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 placeholder="Confirm Password"
                                 value={formData.confirmPassword}
                                 onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })}
                                 required={!isLogin}
+                                className="dark:text-slate-100 dark:placeholder-slate-500"
                             />
                         </div>
                     )}

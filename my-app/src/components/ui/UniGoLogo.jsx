@@ -41,7 +41,7 @@ const UniGoLogo = ({ size = 48, onClick }) => {
               rx="12"
               fill="none"
               stroke="url(#primaryGradient)"
-              strokeWidth="5"
+              strokeWidth="7"
               strokeLinecap="round"
               strokeLinejoin="round"
               className="icon-body"
@@ -52,26 +52,26 @@ const UniGoLogo = ({ size = 48, onClick }) => {
               d="M 35 35 L 35 22 Q 35 15 42 15 L 58 15 Q 65 15 65 22 L 65 35"
               fill="none"
               stroke="url(#primaryGradient)"
-              strokeWidth="5"
+              strokeWidth="7"
               strokeLinecap="round"
               strokeLinejoin="round"
               className="icon-handle"
             />
 
-            {/* Eyes - with blink animation - positioned lower */}
+            {/* Eyes - with blink animation - centered in body */}
             <g className="icon-eyes">
               {/* Left Eye */}
               {isBlinking || isHovered ? (
                 <line
-                  x1="35" y1="85" x2="42" y2="85"
+                  x1="35" y1="72" x2="42" y2="72"
                   stroke="url(#primaryGradient)"
-                  strokeWidth="4"
+                  strokeWidth="5"
                   strokeLinecap="round"
                   className="eye-blink"
                 />
               ) : (
                 <circle
-                  cx="38.5" cy="85" r="4"
+                  cx="38.5" cy="72" r="5"
                   fill="url(#primaryGradient)"
                   className="eye-open"
                 />
@@ -79,21 +79,21 @@ const UniGoLogo = ({ size = 48, onClick }) => {
 
               {/* Right Eye */}
               <circle
-                cx="61.5" cy="85" r="4"
+                cx="61.5" cy="72" r="5"
                 fill="url(#primaryGradient)"
                 className="eye-open"
               />
             </g>
 
-            {/* Smile - positioned quite low for cute effect */}
+            {/* Smile - centered in body */}
             <path
               d={isHovered
-                ? "M 35 105 Q 50 117 65 105"
-                : "M 37 105 Q 50 115 63 105"
+                ? "M 35 92 Q 50 104 65 92"
+                : "M 37 92 Q 50 102 63 92"
               }
               fill="none"
               stroke="url(#primaryGradient)"
-              strokeWidth="4"
+              strokeWidth="5"
               strokeLinecap="round"
               className="icon-smile"
             />
@@ -102,16 +102,16 @@ const UniGoLogo = ({ size = 48, onClick }) => {
           {/* Gradient Definition */}
           <defs>
             <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FF385C" />
-              <stop offset="50%" stopColor="#E31C5F" />
-              <stop offset="100%" stopColor="#D70466" />
+              <stop offset="0%" stopColor="#8B5CF6" />
+              <stop offset="50%" stopColor="#7C3AED" />
+              <stop offset="100%" stopColor="#6D28D9" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
       {/* UniGo Text - Airbnb style (lowercase, next to icon) */}
-      <span className="unigo-brand-text">unigo</span>
+      <span className="unigo-brand-text dark:text-slate-100">unigo</span>
     </div>
   );
 };

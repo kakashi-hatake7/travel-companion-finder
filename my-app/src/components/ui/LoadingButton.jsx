@@ -24,7 +24,7 @@ export default function LoadingButton({
     return (
         <button
             type={type}
-            className={`loading-btn ${className} ${isLoading ? 'is-loading' : ''}`}
+            className={`loading-btn ${className} ${isLoading ? 'is-loading' : ''} dark:disabled:bg-slate-700 dark:disabled:text-slate-400`}
             disabled={disabled || isLoading}
             onClick={onClick}
             {...props}

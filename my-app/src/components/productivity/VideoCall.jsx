@@ -264,26 +264,26 @@ const VideoCall = ({ tripId, currentUser, companionName, addToast, onClose }) =>
     };
 
     return (
-        <div className="video-call-container">
-            <div className="video-call-header">
+        <div className="video-call-container dark:bg-slate-900 dark:text-slate-100">
+            <div className="video-call-header dark:border-slate-800">
                 <div className="video-title">
                     <Video size={24} />
                     <h2>Vibe Check</h2>
                 </div>
-                <button className="video-close-btn" onClick={onClose}>
+                <button className="video-close-btn dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700" onClick={onClose}>
                     <X size={20} />
                 </button>
             </div>
 
             <div className="video-content">
                 {callState === 'idle' && (
-                    <div className="call-idle">
+                    <div className="call-idle dark:bg-slate-800/50">
                         <div className="idle-icon">
                             <Video size={64} />
                         </div>
                         <h3>Quick Video Call</h3>
                         <p>Have a 5-minute "vibe check" with your travel companion before sharing contact details!</p>
-                        <button className="start-call-btn" onClick={startCall}>
+                        <button className="start-call-btn dark:bg-green-600 dark:text-white" onClick={startCall}>
                             <Phone size={20} />
                             Start Call
                         </button>
@@ -291,7 +291,7 @@ const VideoCall = ({ tripId, currentUser, companionName, addToast, onClose }) =>
                 )}
 
                 {callState === 'calling' && (
-                    <div className="call-calling">
+                    <div className="call-calling dark:bg-slate-800">
                         <div className="calling-animation">
                             <div className="calling-ring"></div>
                             <div className="calling-ring"></div>
@@ -308,7 +308,7 @@ const VideoCall = ({ tripId, currentUser, companionName, addToast, onClose }) =>
                 )}
 
                 {callState === 'incoming' && (
-                    <div className="call-incoming">
+                    <div className="call-incoming dark:bg-slate-800">
                         <div className="incoming-animation">
                             <span className="incoming-avatar">{remoteCallData?.callerName?.charAt(0) || 'C'}</span>
                         </div>
@@ -327,9 +327,9 @@ const VideoCall = ({ tripId, currentUser, companionName, addToast, onClose }) =>
                 )}
 
                 {callState === 'connected' && (
-                    <div className="call-connected">
+                    <div className="call-connected dark:bg-slate-950">
                         <div className="video-grid">
-                            <div className="remote-video-container">
+                            <div className="remote-video-container dark:bg-slate-900">
                                 <video
                                     ref={remoteVideoRef}
                                     autoPlay
@@ -338,7 +338,7 @@ const VideoCall = ({ tripId, currentUser, companionName, addToast, onClose }) =>
                                 />
                                 <span className="video-label">{companionName || 'Companion'}</span>
                             </div>
-                            <div className="local-video-container">
+                            <div className="local-video-container dark:bg-slate-900">
                                 <video
                                     ref={localVideoRef}
                                     autoPlay
@@ -358,15 +358,15 @@ const VideoCall = ({ tripId, currentUser, companionName, addToast, onClose }) =>
                             )}
                         </div>
 
-                        <div className="call-controls">
+                        <div className="call-controls dark:bg-slate-800/80">
                             <button
-                                className={`control-btn ${isMuted ? 'active' : ''}`}
+                                className={`control-btn ${isMuted ? 'active' : ''} dark:bg-slate-700 dark:text-slate-200`}
                                 onClick={toggleMute}
                             >
                                 {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
                             </button>
                             <button
-                                className={`control-btn ${isVideoOff ? 'active' : ''}`}
+                                className={`control-btn ${isVideoOff ? 'active' : ''} dark:bg-slate-700 dark:text-slate-200`}
                                 onClick={toggleVideo}
                             >
                                 {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
