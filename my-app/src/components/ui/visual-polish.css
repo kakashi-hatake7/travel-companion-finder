@@ -1,0 +1,79 @@
+/* Enhanced Button Hover Effects */
+button:not(:disabled),
+.btn-primary:not(:disabled),
+.btn-secondary:not(:disabled),
+.filter-search-btn,
+.filter-register-btn,
+.trip-action-btn,
+.view-companions-btn,
+.trip-tools-btn,
+.select-companion-btn,
+.reject-companion-btn,
+.empty-state-action-btn {
+    transition: all 0.2s ease;
+}
+
+button:not(:disabled):hover,
+.btn-primary:not(:disabled):hover,
+.btn-secondary:not(:disabled):hover,
+.filter-search-btn:hover,
+.filter-register-btn:hover,
+.trip-action-btn:hover,
+.view-companions-btn:hover,
+.trip-tools-btn:hover,
+.select-companion-btn:hover,
+.reject-companion-btn:hover {
+    transform: scale(1.02);
+}
+
+button:not(:disabled):active,
+.btn-primary:not(:disabled):active,
+.btn-secondary:not(:disabled):active {
+    transform: scale(0.98);
+}
+
+/* New Badge for Recent Matches */
+.new-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #22c55e, #10b981);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+
+    0%,
+    100% {
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 2px 16px rgba(34, 197, 94, 0.5);
+    }
+}
+
+/* Companion Card New Badge */
+.companion-card {
+    position: relative;
+}
+
+.companion-card .new-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+/* Match Card New Badge */
+.notification-card .new-badge {
+    margin-left: 8px;
+}

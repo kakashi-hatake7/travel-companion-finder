@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { MapPin, Calendar, Navigation, Search, Plus, Phone, Clock, Train, Plane, Bus, User } from 'lucide-react';
+import EmptyState from './ui/EmptyState';
 
-export default function FindCompanion({ trips, destinations, startPoints, onRegisterTrip }) {
+export default function FindCompanion({ trips, destinations, startPoints, onRegisterTrip, setView }) {
     const [filters, setFilters] = useState({
         destination: '',
         startPoint: '',
@@ -189,11 +190,13 @@ export default function FindCompanion({ trips, destinations, startPoints, onRegi
 
                 <div className="companion-list">
                     {filteredTrips.length === 0 ? (
-                        <div className="companion-empty-state glass-card">
-                            <User size={48} />
-                            <h3>No companions found</h3>
-                            <p>Try adjusting your filters or register your trip to find matches</p>
-                        </div>
+                        <EmptyState
+                            icon={<User size={64} />}
+                            title="No trips found for this route"
+                            description="Be the first to register a trip on this route and connect with fellow travelers!"
+                            actionText="Register Trip"
+                            onAction={() => setView ? setView('register') : onRegisterTrip('')}
+                        />
                     ) : (
                         filteredTrips.map((trip) => (
                             <div key={trip.id} className="companion-card glass-card">

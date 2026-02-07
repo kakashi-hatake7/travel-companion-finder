@@ -112,21 +112,20 @@ export default function AuthPage({ onClose, onSuccess }) {
 
         try {
             const { auth } = await import('../../firebase');
-            const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
+            const { GoogleAuthProvider, signInWithRedirect } = await import('firebase/auth');
             const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
-            setSuccess('Signed in with Google!');
-            setTimeout(() => onSuccess && onSuccess(), 1000);
+
+            // Use redirect instead of popup to avoid COOP issues
+            await signInWithRedirect(auth, provider);
+            // Note: The page will redirect, so success callback happens after redirect
         } catch (err) {
-            if (err.code === 'auth/popup-closed-by-user') {
-                setError('Sign-in cancelled. Please try again.');
-            } else if (err.code === 'auth/popup-blocked') {
-                setError('Pop-up blocked. Please allow pop-ups for this site.');
+            setLoading(false);
+            if (err.code === 'auth/popup-blocked') {
+                setError('Sign-in blocked. Please allow redirects for this site.');
             } else {
+                console.error('Google sign-in error:', err);
                 setError('Google sign-in failed. Please try again.');
             }
-        } finally {
-            setLoading(false);
         }
     };
 

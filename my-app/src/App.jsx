@@ -14,6 +14,8 @@ import FindCompanion from './components/FindCompanion';
 import MyTrip from './components/MyTrip';
 import LoadingButton from './components/ui/LoadingButton';
 import ConfirmationModal from './components/ui/ConfirmationModal';
+import FormInput from './components/ui/FormInput';
+import EmptyState from './components/ui/EmptyState';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -22,6 +24,7 @@ import { processNewTripMatches } from './services/matchingService';
 import { listenToNotifications, deleteNotification } from './services/notificationService';
 import { setUserContext, addBreadcrumb } from './services/monitoring';
 import './App.css';
+import './components/ui/visual-polish.css';
 
 export default function TravelCompanionFinder() {
   const [view, setView] = useState('home');
@@ -64,6 +67,16 @@ export default function TravelCompanionFinder() {
 
   // Toast notifications
   const { toasts, addToast, removeToast } = useToast();
+
+  // Form validation state
+  const [formErrors, setFormErrors] = useState({
+    destination: '',
+    startPoint: '',
+    date: '',
+    time: '',
+    contact: ''
+  });
+  const [touchedFields, setTouchedFields] = useState({});
 
   // Smart autocomplete state
   const [recentSearches, setRecentSearches] = useState([]);
@@ -264,21 +277,107 @@ export default function TravelCompanionFinder() {
     });
   };
 
+  // Form validation functions
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'destination':
+        if (!value || value.trim().length === 0) {
+          return 'Destination is required';
+        }
+        if (value.trim().length < 2) {
+          return 'Destination must be at least 2 characters';
+        }
+        return '';
+
+      case 'startPoint':
+        if (!value || value.trim().length === 0) {
+          return 'Starting point is required';
+        }
+        return '';
+
+      case 'date':
+        if (!value) {
+          return 'Travel date is required';
+        }
+        const selectedDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+          return 'Travel date must be today or in the future';
+        }
+        return '';
+
+      case 'time':
+        if (!value) {
+          return 'Departure time is required';
+        }
+        return '';
+
+      case 'contact':
+        if (!value || value.trim().length === 0) {
+          return 'Contact number is required';
+        }
+        if (!/^[0-9]{10}$/.test(value)) {
+          return 'Please enter a valid 10-digit mobile number';
+        }
+        return '';
+
+      default:
+        return '';
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {
+      destination: validateField('destination', formData.destination),
+      startPoint: validateField('startPoint', formData.startPoint),
+      date: validateField('date', formData.date),
+      time: validateField('time', formData.time),
+      contact: validateField('contact', formData.contact)
+    };
+
+    setFormErrors(errors);
+
+    // Check if any errors exist
+    return !Object.values(errors).some(error => error !== '');
+  };
+
+  const handleFieldBlur = (fieldName) => {
+    setTouchedFields(prev => ({ ...prev, [fieldName]: true }));
+    const error = validateField(fieldName, formData[fieldName]);
+    setFormErrors(prev => ({ ...prev, [fieldName]: error }));
+  };
+
+  const handleFieldChange = (fieldName, value) => {
+    setFormData(prev => ({ ...prev, [fieldName]: value }));
+
+    // Clear error when user starts typing
+    if (touchedFields[fieldName]) {
+      const error = validateField(fieldName, value);
+      setFormErrors(prev => ({ ...prev, [fieldName]: error }));
+    }
+  };
+
   const handleSubmit = async () => {
     // Check if user is logged in
     if (!currentUser) {
-      alert('Please sign in to register a trip');
+      addToast('⚠️ Please sign in to register a trip', 'warning', 4000);
       setShowAuthModal(true);
       return;
     }
 
-    // Validate form fields
-    if (!formData.destination || !formData.startPoint || !formData.date || !formData.time || !formData.contact) {
-      alert('Please fill all fields');
-      return;
-    }
-    if (!/^[0-9]{10}$/.test(formData.contact)) {
-      alert('Please enter a valid 10-digit mobile number');
+    // Mark all fields as touched
+    setTouchedFields({
+      destination: true,
+      startPoint: true,
+      date: true,
+      time: true,
+      contact: true
+    });
+
+    // Validate form
+    if (!validateForm()) {
+      addToast('❌ Please fix the errors in the form', 'error', 4000);
       return;
     }
 
@@ -288,11 +387,15 @@ export default function TravelCompanionFinder() {
       if (editingTripId) {
         const result = await updateTrip(editingTripId, formData);
         if (result.success) {
-          alert('Trip updated successfully!');
+          addToast('✅ Trip updated successfully!', 'success', 4000);
           setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
           setSearchTerm('');
           setEditingTripId(null);
+          setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setTouchedFields({});
           setView('myTrip');
+        } else {
+          addToast('❌ Failed to update trip. Please try again.', 'error', 5000);
         }
       } else {
         // Create new trip in Firestore
@@ -320,12 +423,14 @@ export default function TravelCompanionFinder() {
               message: `Your journey to ${formData.destination} has been registered. We found ${matchResult.matchCount} potential travel companion${matchResult.matchCount > 1 ? 's' : ''}!`,
               matchCount: matchResult.matchCount
             });
+            addToast(`🎉 ${matchResult.matchCount} match${matchResult.matchCount > 1 ? 'es' : ''} found! Check your trip details.`, 'success', 5000);
           } else {
             setConfirmationData({
               title: '✅ Trip Registered Successfully!',
               message: `Your journey to ${formData.destination} has been registered. We're actively searching for compatible travel companions.`,
               matchCount: 0
             });
+            addToast('✅ Trip registered! We\'ll notify you when we find a match.', 'success', 4000);
           }
           setShowConfirmationModal(true);
 
@@ -339,7 +444,11 @@ export default function TravelCompanionFinder() {
           // Reset form
           setFormData({ destination: '', startPoint: '', date: '', time: '', contact: '' });
           setSearchTerm('');
+          setFormErrors({ destination: '', startPoint: '', date: '', time: '', contact: '' });
+          setTouchedFields({});
           setView('home');
+        } else {
+          addToast('❌ Failed to register trip. Please try again.', 'error', 5000);
         }
       }
     } catch (error) {
@@ -757,20 +866,24 @@ export default function TravelCompanionFinder() {
 
                 {/* Contact */}
                 <div className="form-group">
-                  <label>Contact Number</label>
+                  <FormInput
+                    label="Contact Number"
+                    type="tel"
+                    value={formData.contact}
+                    onChange={(e) => handleFieldChange('contact', e.target.value)}
+                    onBlur={() => handleFieldBlur('contact')}
+                    error={touchedFields.contact ? formErrors.contact : ''}
+                    isValid={!formErrors.contact && formData.contact.length === 10}
+                    placeholder="10-digit mobile number"
+                    maxLength={10}
+                    required
+                  />
                   {/* Contact Autofill */}
                   {savedContact && !formData.contact && (
                     <button type="button" className="autofill-btn" onClick={handleContactAutofill}>
                       <Phone size={14} /> Use saved: {savedContact}
                     </button>
                   )}
-                  <input
-                    type="tel"
-                    value={formData.contact}
-                    maxLength="10"
-                    placeholder="10-digit mobile number"
-                    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                  />
                 </div>
 
                 <LoadingButton
@@ -815,10 +928,13 @@ export default function TravelCompanionFinder() {
             destinations={destinations}
             startPoints={startPoints}
             onRegisterTrip={(destination) => {
-              setFormData({ ...formData, destination });
-              setSearchTerm(destination);
+              if (destination) {
+                setFormData({ ...formData, destination });
+                setSearchTerm(destination);
+              }
               setView('register');
             }}
+            setView={setView}
           />
         )}
 
