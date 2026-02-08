@@ -18,6 +18,7 @@ import EmptyState from './components/ui/EmptyState';
 import GenderPreference from './components/ui/GenderPreference';
 import GroupModeToggle from './components/ui/GroupModeToggle';
 import Footer from './components/ui/Footer';
+import BentoRegistrationForm from './components/BentoRegistrationForm';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { ensureUserProfile } from './services/userService';
@@ -704,302 +705,29 @@ export default function TravelCompanionFinder() {
           </div>
         )}
 
-        {/* Register View - Premium Booking Dashboard */}
+        {/* Register View - Bento Grid Dashboard */}
         {view === 'register' && (
-          <div className="register-view animate-fade-in">
-            <div className="booking-dashboard">
-              {/* Dashboard Header */}
-              <div className="dashboard-header">
-                <h2>{editingTripId ? 'Edit Your Trip' : 'Register Your Trip'}</h2>
-                <p>{editingTripId ? 'Update your travel plans' : 'Share your travel plans and find companions'}</p>
-              </div>
-
-              {/* Main Form Content */}
-              <div className="dashboard-body">
-
-                {/* Section 1: Location Details */}
-                <div className="form-section">
-                  <span className="section-label">LOCATION DETAILS</span>
-
-                  <div className="location-grid">
-                    {/* Destination */}
-                    <div className="form-group destination-group">
-                      <label>Where are you going?</label>
-
-                      {/* Quick Chips */}
-                      <div className="quick-chips-section">
-                        {recentSearches.length > 0 && (
-                          <div className="quick-chips-row">
-                            <span className="quick-label">Recent</span>
-                            <div className="quick-chips">
-                              {recentSearches.slice(0, 3).map(dest => (
-                                <button
-                                  key={dest}
-                                  type="button"
-                                  className={`quick-chip ${formData.destination === dest ? 'active' : ''}`}
-                                  onClick={() => handleQuickDestination(dest)}
-                                >
-                                  {dest}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        <div className="quick-chips-row">
-                          <span className="quick-label">Popular</span>
-                          <div className="quick-chips">
-                            {popularDestinations.slice(0, 4).map(dest => (
-                              <button
-                                key={dest}
-                                type="button"
-                                className={`quick-chip ${formData.destination === dest ? 'active' : ''}`}
-                                onClick={() => handleQuickDestination(dest)}
-                              >
-                                {dest}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="search-input-container" ref={dropdownRef}>
-                        <Navigation size={18} className="input-icon" />
-                        <input
-                          type="text"
-                          placeholder="Search destination..."
-                          value={searchTerm || formData.destination}
-                          onFocus={() => setIsDropdownOpen(true)}
-                          onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                            setFormData({ ...formData, destination: e.target.value });
-                            setIsDropdownOpen(true);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Escape') {
-                              setIsDropdownOpen(false);
-                            }
-                          }}
-                        />
-                        {isDropdownOpen && (() => {
-                          const filteredDests = destinations
-                            .filter(d => d.toLowerCase().includes((searchTerm || '').toLowerCase()))
-                            .slice(0, 6);
-
-                          return (
-                            <div className="dropdown-menu">
-                              {filteredDests.length > 0 ? (
-                                filteredDests.map(dest => (
-                                  <div
-                                    key={dest}
-                                    className="dropdown-item"
-                                    onClick={() => {
-                                      setFormData({ ...formData, destination: dest });
-                                      setSearchTerm(dest);
-                                      setIsDropdownOpen(false);
-                                    }}
-                                  >
-                                    <MapPin size={14} />
-                                    {dest}
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="dropdown-item dropdown-empty">
-                                  <MapPin size={14} />
-                                  No destinations found
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Starting Point */}
-                    <div className="form-group">
-                      <label>Starting from?</label>
-                      <select
-                        value={formData.startPoint}
-                        onChange={(e) => setFormData({ ...formData, startPoint: e.target.value })}
-                      >
-                        <option value="">Select starting point</option>
-                        {startPoints.map(point => (
-                          <option key={point} value={point}>{point}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section 2: Date & Time */}
-                <div className="form-section">
-                  <span className="section-label">SCHEDULE</span>
-
-                  <div className="schedule-grid">
-                    {/* Date Column */}
-                    <div className="form-group">
-                      <label>Travel Date</label>
-                      <div className="quick-date-buttons">
-                        <button type="button" className="quick-date-btn" onClick={() => handleQuickDate('today')}>Today</button>
-                        <button type="button" className="quick-date-btn" onClick={() => handleQuickDate('tomorrow')}>Tomorrow</button>
-                        <button type="button" className="quick-date-btn" onClick={() => handleQuickDate('weekend')}>Weekend</button>
-                      </div>
-                      <input
-                        type="date"
-                        value={formData.date}
-                        min={new Date().toISOString().split('T')[0]}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      />
-                    </div>
-
-                    {/* Time Column */}
-                    <div className="form-group">
-                      <label>Departure Time</label>
-                      {/* Time Presets Grid - Fixed 5 column layout */}
-                      <div className="time-presets-grid">
-                        {timePresets.map(preset => (
-                          <button
-                            key={preset.time}
-                            type="button"
-                            className={`time-preset-btn ${formData.time === preset.time ? 'active' : ''}`}
-                            onClick={() => handleTimePreset(preset.time)}
-                          >
-                            <span className="time-icon">{preset.icon}</span>
-                            <span className="time-label">{preset.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                      {/* Custom Time Input */}
-                      <div className="custom-time-section">
-                        <span className="custom-time-label">Or select custom time:</span>
-                        <input
-                          type="time"
-                          value={formData.time}
-                          onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                          className="custom-time-input"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section 3: Contact */}
-                <div className="form-section">
-                  <span className="section-label">CONTACT</span>
-
-                  <div className="form-group">
-                    <FormInput
-                      label="Mobile Number"
-                      type="tel"
-                      value={formData.contact}
-                      onChange={(e) => handleFieldChange('contact', e.target.value)}
-                      onBlur={() => handleFieldBlur('contact')}
-                      error={touchedFields.contact ? formErrors.contact : ''}
-                      isValid={!formErrors.contact && formData.contact.length === 10}
-                      placeholder="10-digit mobile number"
-                      maxLength={10}
-                      required
-                    />
-                    {/* Contact Autofill */}
-                    {savedContact && !formData.contact && (
-                      <button type="button" className="autofill-btn" onClick={handleContactAutofill}>
-                        <Phone size={14} /> Use saved: {savedContact}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Section 4: Preferences - Distinct Gray Box */}
-                <div className="preferences-section">
-                  <span className="section-label">PREFERENCES</span>
-
-                  {/* Group Mode Toggle Row */}
-                  <div className="preference-row group-mode-row">
-                    <div className="preference-info">
-                      <Users size={20} />
-                      <div className="preference-text">
-                        <span className="preference-title">Group Mode</span>
-                        <span className="preference-desc">Allow others to join your trip</span>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className={`toggle-switch-premium ${formData.isGroupTrip ? 'active' : ''}`}
-                      onClick={() => setFormData({ ...formData, isGroupTrip: !formData.isGroupTrip })}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  {/* Seats Selector - Only visible when Group Mode is ON */}
-                  {formData.isGroupTrip && (
-                    <div className="seats-selection-row">
-                      <label>Total Seats</label>
-                      <div className="seats-selector-compact">
-                        <button
-                          type="button"
-                          className="seats-btn-compact"
-                          onClick={() => setFormData({ ...formData, totalSeats: Math.max(2, formData.totalSeats - 1) })}
-                          disabled={formData.totalSeats <= 2}
-                        >
-                          −
-                        </button>
-                        <span className="seats-value">{formData.totalSeats}</span>
-                        <button
-                          type="button"
-                          className="seats-btn-compact"
-                          onClick={() => setFormData({ ...formData, totalSeats: Math.min(4, formData.totalSeats + 1) })}
-                          disabled={formData.totalSeats >= 4}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Gender Preference - Segmented Control */}
-                  <div className="preference-row gender-preference-row">
-                    <label className="gender-label">Comfortable traveling with</label>
-                    <div className="gender-segmented-control">
-                      <button
-                        type="button"
-                        className={`segment-btn ${formData.genderPreference === 'any' ? 'active' : ''}`}
-                        onClick={() => handleFieldChange('genderPreference', 'any')}
-                      >
-                        <Users size={16} />
-                        Anyone
-                      </button>
-                      <button
-                        type="button"
-                        className={`segment-btn ${formData.genderPreference === 'female_only' ? 'active' : ''}`}
-                        onClick={() => handleFieldChange('genderPreference', 'female_only')}
-                      >
-                        <User size={16} />
-                        Women Only
-                      </button>
-                      <button
-                        type="button"
-                        className={`segment-btn ${formData.genderPreference === 'male_only' ? 'active' : ''}`}
-                        onClick={() => handleFieldChange('genderPreference', 'male_only')}
-                      >
-                        <User size={16} />
-                        Men Only
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit Button */}
-                <LoadingButton
-                  className="submit-btn-premium"
-                  onClick={handleSubmit}
-                  isLoading={isSubmitting}
-                >
-                  <Sparkles size={18} />
-                  {editingTripId ? 'Update Trip' : 'Register Trip'}
-                </LoadingButton>
-              </div>
-            </div>
-          </div>
+          <BentoRegistrationForm
+            formData={formData}
+            setFormData={setFormData}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            editingTripId={editingTripId}
+            formErrors={formErrors}
+            touchedFields={touchedFields}
+            handleFieldChange={handleFieldChange}
+            handleFieldBlur={handleFieldBlur}
+            savedContact={savedContact}
+            handleContactAutofill={handleContactAutofill}
+            recentSearches={recentSearches}
+            popularDestinations={popularDestinations}
+            destinations={destinations}
+            startPoints={startPoints}
+            handleQuickDestination={handleQuickDestination}
+            handleQuickDate={handleQuickDate}
+            handleTimePreset={handleTimePreset}
+            timePresets={timePresets}
+          />
         )}
 
         {/* My Trip View */}

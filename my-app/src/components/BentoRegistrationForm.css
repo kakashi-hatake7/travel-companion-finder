@@ -1,0 +1,725 @@
+/* ============================================
+   BENTO GRID REGISTRATION - MODERN DESIGN
+   ============================================ */
+
+.bento-registration-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+}
+
+/* ============================================
+   HEADER SECTION
+   ============================================ */
+
+.bento-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.bento-header-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.bento-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.bento-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+.bento-subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* ============================================
+   BENTO GRID LAYOUT
+   ============================================ */
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* ============================================
+   BENTO CARDS
+   ============================================ */
+
+.bento-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 30px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.bento-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 20px 40px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+/* Card Variants */
+.bento-card-location {
+    grid-column: span 2;
+}
+
+.bento-card-schedule {
+    grid-column: span 1;
+}
+
+.bento-card-contact {
+    grid-column: span 1;
+}
+
+.bento-card-preferences {
+    grid-column: span 2;
+}
+
+/* ============================================
+   CARD HEADER
+   ============================================ */
+
+.bento-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.bento-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.location-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.schedule-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.contact-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.preferences-icon {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+}
+
+.bento-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.bento-card-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.25rem 0 0;
+}
+
+/* ============================================
+   CARD BODY
+   ============================================ */
+
+.bento-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ============================================
+   INPUT GROUPS
+   ============================================ */
+
+.bento-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bento-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ============================================
+   CHIPS (Quick Selection)
+   ============================================ */
+
+.bento-chips {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.chip-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.chip-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bento-chip {
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bento-chip:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.bento-chip.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+
+.bento-input,
+.bento-select {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #1e293b;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.bento-input:focus,
+.bento-select:focus {
+    outline: none;
+    background: white;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.bento-input::placeholder {
+    color: #94a3b8;
+}
+
+/* Input Wrappers with Icons */
+.bento-search-wrapper,
+.bento-date-wrapper,
+.bento-time-wrapper,
+.bento-phone-wrapper,
+.bento-select-wrapper {
+    position: relative;
+}
+
+.bento-input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ============================================
+   DROPDOWN
+   ============================================ */
+
+.bento-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e2e8f0;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+.bento-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #475569;
+    font-size: 0.9375rem;
+}
+
+.bento-dropdown-item:hover {
+    background: #f8fafc;
+    color: #667eea;
+}
+
+.bento-dropdown-item:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.bento-dropdown-item:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.bento-dropdown-empty {
+    color: #94a3b8;
+    cursor: default;
+}
+
+.bento-dropdown-empty:hover {
+    background: transparent;
+    color: #94a3b8;
+}
+
+/* ============================================
+   QUICK BUTTONS (Date)
+   ============================================ */
+
+.bento-quick-btns {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.bento-quick-btn {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bento-quick-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   TIME PRESETS
+   ============================================ */
+
+.bento-time-presets {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+}
+
+.bento-time-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bento-time-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.bento-time-btn.active {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-color: #f093fb;
+    box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+}
+
+.bento-time-btn.active .time-emoji,
+.bento-time-btn.active .time-text {
+    filter: brightness(1.2);
+}
+
+.time-emoji {
+    font-size: 1.25rem;
+}
+
+.time-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #475569;
+}
+
+.bento-time-btn.active .time-text {
+    color: white;
+}
+
+/* ============================================
+   ERROR MESSAGES
+   ============================================ */
+
+.bento-error {
+    font-size: 0.875rem;
+    color: #ef4444;
+    margin-top: -0.5rem;
+}
+
+/* ============================================
+   AUTOFILL BUTTON
+   ============================================ */
+
+.bento-autofill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.bento-autofill-btn:hover {
+    background: #f1f5f9;
+    border-color: #667eea;
+}
+
+/* ============================================
+   PREFERENCES
+   ============================================ */
+
+.bento-preference-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+}
+
+.bento-preference-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #475569;
+}
+
+.bento-preference-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.bento-preference-desc {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.125rem;
+}
+
+/* Toggle Switch */
+.bento-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.bento-toggle.active {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.bento-toggle-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bento-toggle.active .bento-toggle-slider {
+    transform: translateX(24px);
+}
+
+/* ============================================
+   SEATS SELECTOR
+   ============================================ */
+
+.bento-seats-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+}
+
+.bento-seats-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bento-seats-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bento-seats-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.bento-seats-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.bento-seats-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* ============================================
+   GENDER PILLS
+   ============================================ */
+
+.bento-gender-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bento-gender-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.bento-gender-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bento-gender-pill:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.bento-gender-pill.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================
+   SUBMIT BUTTON
+   ============================================ */
+
+.bento-submit-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.bento-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.bento-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+}
+
+.bento-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .bento-registration-container {
+        padding: 1.5rem 1rem 3rem;
+    }
+
+    .bento-title {
+        font-size: 2rem;
+    }
+
+    .bento-subtitle {
+        font-size: 1rem;
+    }
+
+    .bento-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .bento-card-location,
+    .bento-card-schedule,
+    .bento-card-contact,
+    .bento-card-preferences {
+        grid-column: span 1;
+    }
+
+    .bento-card {
+        padding: 1.5rem;
+    }
+
+    .bento-time-presets {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .bento-gender-pills {
+        grid-template-columns: 1fr;
+    }
+
+    .bento-submit-wrapper {
+        justify-content: stretch;
+    }
+
+    .bento-submit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .bento-chips {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .chip-group {
+        width: 100%;
+    }
+
+    .bento-chip {
+        flex: 1;
+        text-align: center;
+    }
+
+    .bento-quick-btns {
+        flex-direction: column;
+    }
+
+    .bento-time-presets {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
