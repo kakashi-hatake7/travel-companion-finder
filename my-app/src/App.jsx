@@ -12,7 +12,7 @@ import GoogleEarthGlobe from './components/globe/LeafletGlobe';
 import FindCompanion from './components/FindCompanion';
 import MyTrip from './components/MyTrip';
 import LoadingButton from './components/ui/LoadingButton';
-import ConfirmationModal from './components/ui/ConfirmationModal';
+import SuccessNotification from './components/ui/SuccessNotification';
 import FormInput from './components/ui/FormInput';
 import EmptyState from './components/ui/EmptyState';
 import GenderPreference from './components/ui/GenderPreference';
@@ -886,12 +886,11 @@ export default function TravelCompanionFinder() {
         />
       )}
 
-      {/* Confirmation Modal */}
-      <ConfirmationModal
+      {/* Success Notification */}
+      <SuccessNotification
         isOpen={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
-        title={confirmationData.title}
-        message={confirmationData.message}
+        destination={formData.destination}
         matchCount={confirmationData.matchCount}
       />
 
