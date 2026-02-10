@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Phone, Calendar, Navigation, Edit, Trash2, AlertCircle, Sparkles, Users, CheckCircle, ChevronDown, ChevronUp, UserCheck, X, Briefcase } from 'lucide-react';
+import { MapPin, Clock, Phone, Calendar, Navigation, Edit, Trash2, AlertCircle, Sparkles, Users, CheckCircle, ChevronDown, ChevronUp, UserCheck, X, Briefcase, Star } from 'lucide-react';
 import { deleteTrip } from '../services/tripService';
 import { getMatchesForUser, getMatchDetailsForTrip, confirmMatch, rejectMatch } from '../services/matchingService';
 import TripTools from './productivity/TripTools';
+import ReviewModal from './ui/ReviewModal';
 
 export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast }) {
     const [activeTab, setActiveTab] = useState('active'); // 'active' or 'past'
@@ -16,6 +17,8 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
     const [isDeleting, setIsDeleting] = useState(false);
     const [showTripTools, setShowTripTools] = useState(null); // holds { tripId, tripData, companionId, companionName }
     const [matchCounts, setMatchCounts] = useState({});
+    const [showReviewModal, setShowReviewModal] = useState(null); // holds { tripId, matchId, companion }
+    const [reviewedTrips, setReviewedTrips] = useState({}); // tracks which trips have been reviewed
 
     // Separate active and past trips
     useEffect(() => {
@@ -375,6 +378,33 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                         </button>
                     </div>
                 )}
+
+                {/* Leave Review Button - only for past trips with confirmed companion */}
+                {isPast && confirmedCompanion && (
+                    <div className="past-trip-actions">
+                        {reviewedTrips[`${trip.id}-${confirmedCompanion.companionUserId}`] ? (
+                            <button className="review-completed-btn" disabled>
+                                <CheckCircle size={18} />
+                                Reviewed
+                            </button>
+                        ) : (
+                            <button
+                                className="leave-review-btn"
+                                onClick={() => setShowReviewModal({
+                                    tripId: trip.id,
+                                    matchId: confirmedCompanion.matchId,
+                                    companion: {
+                                        id: confirmedCompanion.companionUserId,
+                                        name: confirmedCompanion.companionName
+                                    }
+                                })}
+                            >
+                                <Star size={18} />
+                                Leave Review
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         );
     };
@@ -500,6 +530,28 @@ export default function MyTrip({ currentUser, trips, onEdit, onBack, addToast })
                         />
                     </div>
                 </div>
+            )}
+
+            {/* Review Modal */}
+            {showReviewModal && (
+                <ReviewModal
+                    isOpen={!!showReviewModal}
+                    onClose={(submitted) => {
+                        if (submitted) {
+                            // Mark this trip-companion combo as reviewed
+                            setReviewedTrips(prev => ({
+                                ...prev,
+                                [`${showReviewModal.tripId}-${showReviewModal.companion.id}`]: true
+                            }));
+                        }
+                        setShowReviewModal(null);
+                    }}
+                    tripId={showReviewModal.tripId}
+                    matchId={showReviewModal.matchId}
+                    currentUser={currentUser}
+                    companion={showReviewModal.companion}
+                    addToast={addToast}
+                />
             )}
         </div>
     );

@@ -2802,6 +2802,58 @@
   transform: translateY(-2px);
 }
 
+/* Past Trip Actions - Leave Review */
+.past-trip-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+}
+
+.leave-review-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: linear-gradient(135deg, #FFB800, #F59E0B);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: white;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.3);
+}
+
+.leave-review-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 184, 0, 0.4);
+}
+
+.leave-review-btn svg {
+  fill: white;
+}
+
+.review-completed-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--radius-lg);
+  color: #22c55e;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: default;
+}
+
+.review-completed-btn:disabled {
+  opacity: 1;
+}
+
 /* Empty Trip State */
 .empty-trip-state {
   display: flex;
